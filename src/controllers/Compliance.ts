@@ -32,7 +32,6 @@ class ComplianceController {
   async complianceCalculate(req: Request, res: Response) {
     try {
       const complianceId = req.params.id;
-      console.log(complianceId);
 
       // Encontrar o Compliance pelo ID
       const compliance = await Compliance.findOne({
@@ -42,7 +41,8 @@ class ComplianceController {
       if (!compliance) {
         return res.status(404).json({ errors: ['Compliance não encontrado'] });
       }
-      console.log('oi');
+      console.log('oi2');
+      console.log('wwwwww');
 
       const complianceArray = [compliance];
       const test = complianceArray.map((item) => item.server.servers);

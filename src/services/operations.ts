@@ -1,8 +1,11 @@
-export const calculatePointing = (infra) => {
+export const calculatePointing = (infra: any) => {
+  console.log('cheguei \n');
+  const infraArray = [infra];
+  console.log(infraArray);
   let pointsDone = 0;
 
-  infra.forEach((items) => {
-    pointsDone = backupCalc(items.backup);
+  infraArray.forEach((items) => {
+    // pointsDone = backupCalc(items.backup);
   });
   return pointsDone;
 };
