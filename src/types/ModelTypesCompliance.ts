@@ -1,30 +1,40 @@
 import { Types } from 'mongoose';
 
-export interface IScore {
-  score: number;
-}
+// export interface IScore {
+//   score: number;
+// }
 
 export interface IWeight {
   weight: number;
 }
 
+export interface IBackupItems {
+  policy: IBackup;
+  frequency: IFrequency;
+  storage: {
+    local: IBackup;
+    remote: IBackup;
+  };
+  restoration: IBackup;
+}
+
 export interface IBackup {
   enabled: boolean;
-  score: IScore;
-  weight: IWeight;
+  score: number;
+  weight: number;
   description?: string;
 }
 
 export interface IFrequency {
   value: number;
-  score: IScore;
-  weight: IWeight;
+  score: number;
+  weight: number;
   description?: string;
 }
 
 export interface ISystemOperation {
   patching: 'Regular' | 'Irregular';
-  score: IScore;
+  score: number;
   weight: IWeight;
 }
 
@@ -33,7 +43,7 @@ export interface IServer {
   systemOperation: ISystemOperation;
   config: 'low' | 'medium' | 'high';
   monitoringPerformance: boolean;
-  score: IScore;
+  score: number;
   weight: IWeight;
   description?: string;
 }
@@ -52,15 +62,7 @@ export interface IHA {
 
 export interface ICompliance extends Document {
   complianceId: Types.ObjectId;
-  backup: {
-    policy: IBackup;
-    frequency: IBackup;
-    storage: {
-      local: IBackup;
-      remote: IBackup;
-    };
-    restoration: IBackup;
-  };
+  backup: IBackupItems;
   server: IServers;
   ha: IHA;
 }

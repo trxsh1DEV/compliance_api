@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Compliance_1 = __importDefault(require("../models/Compliance"));
+const operations_1 = require("../services/operations");
 class ComplianceController {
     async index(req, res) {
         const devices = await Compliance_1.default.find();
@@ -38,13 +39,9 @@ class ComplianceController {
             if (!compliance) {
                 return res.status(404).json({ errors: ['Compliance não encontrado'] });
             }
-            console.log('oi2');
-            console.log('wwwwww');
-            const complianceArray = [compliance];
-            const test = complianceArray.map((item) => item.server.servers);
-            // const complianceCurrent = calculatePointing(complianceArray);
-            // console.log(complianceCurrent);
-            return res.status(200).json(test);
+            const complianceCurrent = (0, operations_1.calculatePointing)(compliance);
+            console.log(typeof complianceCurrent);
+            return res.status(200).json(compliance);
         }
         catch (err) {
             return res.status(500).json({

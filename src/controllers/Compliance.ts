@@ -41,15 +41,10 @@ class ComplianceController {
       if (!compliance) {
         return res.status(404).json({ errors: ['Compliance não encontrado'] });
       }
-      console.log('oi2');
-      console.log('wwwwww');
 
-      const complianceArray = [compliance];
-      const test = complianceArray.map((item) => item.server.servers);
-
-      // const complianceCurrent = calculatePointing(complianceArray);
-      // console.log(complianceCurrent);
-      return res.status(200).json(test);
+      const complianceCurrent = calculatePointing(compliance);
+      console.log(typeof complianceCurrent);
+      return res.status(200).json(compliance);
     } catch (err: any) {
       return res.status(500).json({
         errors: [err.message],
