@@ -1,11 +1,4 @@
-import {
-  model,
-  Schema,
-  Model,
-  Document,
-  Types,
-  SchemaDefinition,
-} from 'mongoose';
+import { model, Schema, Model, SchemaDefinition } from 'mongoose';
 import { ICompliance } from '../types/ModelTypesCompliance';
 
 class Compliance {
@@ -40,8 +33,6 @@ class Compliance {
       this.ComplianceSchema,
     );
   }
-
-  // Restante do código...
 
   // Funções de criação de esquemas tipadas
   createPolicySchema(): SchemaDefinition {
@@ -89,7 +80,7 @@ class Compliance {
           server_name: { type: String, required: true },
           systemOperation: this.createSystemOperationSchema(),
           config: { type: String, enum: ['low', 'medium', 'high'] },
-          monitoramentoDesempenho: { type: Boolean, required: true },
+          monitoringPerformance: { type: Boolean, required: true },
           score: this.scoreTemplate(),
           weight: this.weightTemplate(8),
           description: { type: String },
@@ -115,14 +106,14 @@ class Compliance {
   createHASchema() {
     return {
       enabled: { type: Boolean, required: true, default: false },
-      solution: {
-        type: String,
+      solutions: {
+        type: [String],
         enum: ['redundancy', 'load balance', 'failover', 'cluster', 'none'],
-        default: 'none',
+        default: ['none'],
         score: this.scoreTemplate(),
         weight: this.weightTemplate(8),
       },
-      testing: { type: Boolean, required: true },
+      tested: { type: Boolean, required: true },
       rto: {
         type: Number,
         required: true,
@@ -134,17 +125,21 @@ class Compliance {
       },
     };
   }
+
   // HA
 
   // Templates
   scoreTemplate() {
     return {
-      score: { type: Number, enum: [...Array(11).keys()], default: 0 },
+      type: Number,
+      enum: [...Array(11).keys()],
+      default: 0,
     };
   }
   weightTemplate(numb: number) {
     return {
-      score: { type: Number, default: numb },
+      type: Number,
+      default: numb,
     };
   }
 }

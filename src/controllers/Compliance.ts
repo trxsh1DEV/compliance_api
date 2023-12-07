@@ -17,13 +17,12 @@ class ComplianceController {
   }
 
   async store(req: Request, res: Response) {
-    const device = new Compliance(req.body);
-    console.log(req.body);
+    const compliance = new Compliance(req.body);
 
     try {
-      const saveDevice = await device.save();
+      const saveCompliance = await compliance.save();
 
-      return res.status(200).json(saveDevice);
+      return res.status(200).json(saveCompliance);
     } catch (err: any) {
       return res.status(400).json({
         errors: [err.message],
@@ -33,6 +32,7 @@ class ComplianceController {
   async complianceCalculate(req: Request, res: Response) {
     try {
       const complianceId = req.params.id;
+      console.log(complianceId);
 
       // Encontrar o Compliance pelo ID
       const compliance = await Compliance.findOne({
@@ -42,13 +42,14 @@ class ComplianceController {
       if (!compliance) {
         return res.status(404).json({ errors: ['Compliance não encontrado'] });
       }
+      console.log('oi');
 
       const complianceArray = [compliance];
+      const test = complianceArray.map((item) => item.server.servers);
 
-      const complianceCurrent = calculatePointing(complianceArray);
-      console.log(complianceCurrent);
-
-      return res.status(200).json(compliance);
+      // const complianceCurrent = calculatePointing(complianceArray);
+      // console.log(complianceCurrent);
+      return res.status(200).json(test);
     } catch (err: any) {
       return res.status(500).json({
         errors: [err.message],

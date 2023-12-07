@@ -32,7 +32,7 @@ export interface IServer {
   server_name: string;
   systemOperation: ISystemOperation;
   config: 'low' | 'medium' | 'high';
-  monitoramentoDesempenho: boolean;
+  monitoringPerformance: boolean;
   score: IScore;
   weight: IWeight;
   description?: string;
@@ -46,7 +46,7 @@ export interface IServers {
 export interface IHA {
   enabled: boolean;
   solution: 'redundancy' | 'load balance' | 'failover' | 'cluster' | 'none';
-  testing: boolean;
+  tested: boolean;
   rto: number;
 }
 

@@ -22,7 +22,7 @@ class App {
     // this.app.use(
     //   expressJwt({ secret: 'your-secret-key' }).unless({
     //     path: ['/api/public-route'], // Rotas públicas excluídas da verificação do token
-    //   })
+    // })
     // );
   }
 
