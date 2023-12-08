@@ -8,6 +8,7 @@ import { Types } from 'mongoose';
 //   weight: number;
 // }
 
+// Backup
 export interface IBackupItems {
   policy: IBackup;
   frequency: IFrequency;
@@ -32,8 +33,23 @@ export interface IFrequency {
   description?: string;
 }
 
+// Backup
+
 export interface ISystemOperation {
   patching: 'Regular' | 'Irregular';
+  score: number;
+  weight: number;
+}
+
+interface IConfigServerDocument {
+  type: 'low' | 'medium' | 'high';
+  score: number;
+  weight: number;
+}
+
+interface IMonitoringPerformanceDocument {
+  type: boolean;
+  required: true;
   score: number;
   weight: number;
 }
@@ -41,8 +57,8 @@ export interface ISystemOperation {
 export interface IServer {
   server_name: string;
   systemOperation: ISystemOperation;
-  config: 'low' | 'medium' | 'high';
-  monitoringPerformance: boolean;
+  config: IConfigServerDocument;
+  monitoringPerformance: IMonitoringPerformanceDocument;
   score: number;
   weight: number;
   description?: string;
@@ -55,9 +71,17 @@ export interface IServers {
 
 export interface IHA {
   enabled: boolean;
-  solution: 'redundancy' | 'load balance' | 'failover' | 'cluster' | 'none';
+  solutions: (
+    | 'redundancy'
+    | 'load balance'
+    | 'failover'
+    | 'cluster'
+    | 'none'
+  )[];
   tested: boolean;
   rto: number;
+  score: number;
+  weight: number;
 }
 
 export interface ICompliance extends Document {

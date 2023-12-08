@@ -4,17 +4,21 @@ exports.calculatePointing = void 0;
 const calculatePointing = (infra) => {
     const infraArray = [infra];
     let bkp = '';
-    let servers;
+    let servers = [];
+    let ha = '';
     infraArray.forEach((items) => {
+        // ha = haCalc(items.ha);
         bkp = backupCalc(items.backup);
-        servers = ServersCalc(items.server);
+        // servers = ServersCalc(items.server) || [];
     });
-    console.log(bkp);
-    console.log(servers);
-    return null;
+    // console.log(ha);
+    // console.log(servers);
+    // console.log(bkp);
+    // return null;
 };
 exports.calculatePointing = calculatePointing;
 const backupCalc = (itemsBackup) => {
+    // TODO OK
     const { policy, frequency, restoration } = itemsBackup;
     const { local, remote } = itemsBackup.storage;
     let policyCalc = policy.score * policy.weight;
@@ -22,9 +26,10 @@ const backupCalc = (itemsBackup) => {
     let storageLocalCalc = local.score * local.weight;
     let storageRemoteCalc = remote.score * remote.weight;
     let restorationCalc = restoration.score * restoration.weight;
-    let pointingTotal = pointTotalCalc(policyCalc, frequencyCalc, storageLocalCalc, storageRemoteCalc, restorationCalc);
-    let pointingMax = maxPointing(policy.weight, frequency.weight, local.weight, remote.weight, restoration.weight);
-    return calculatePercentage(pointingTotal, pointingMax);
+    let totalPoints = pointTotalCalc(policyCalc, frequencyCalc, storageLocalCalc, storageRemoteCalc, restorationCalc);
+    let maxPoints = maxPointing(policy.weight, frequency.weight, local.weight, remote.weight, restoration.weight);
+    // console.log(totalPoints, maxPoints);
+    return calculatePercentage(totalPoints, maxPoints);
 };
 const ServersCalc = (itemsServer) => {
     const { enabled } = itemsServer;
@@ -33,21 +38,28 @@ const ServersCalc = (itemsServer) => {
     let pointsAllServers = [];
     for (const obj of itemsServer.servers) {
         const score = obj.score * obj.weight;
-        let totalPoint = pointTotalCalc(score);
+        let totalPoints = pointTotalCalc(score);
         let maxPoints = maxPointing(obj.weight);
-        const pointServer = calculatePercentage(totalPoint, maxPoints);
+        // console.log(totalPoints, maxPoints);
+        const pointServer = calculatePercentage(totalPoints, maxPoints);
         pointsAllServers.push({ name: obj.server_name, pointing: pointServer });
     }
     // pointsAllServers.map((item) => console.log(item.name, item.pointing));
     return pointsAllServers;
 };
+const haCalc = (itemsHA) => {
+    let totalPoints = pointTotalCalc(itemsHA.score * itemsHA.weight);
+    let maxPoints = maxPointing(itemsHA.weight);
+    // console.log(totalPoints, maxPoints);
+    return calculatePercentage(totalPoints, maxPoints);
+};
 const pointTotalCalc = (...points) => {
-    // console.log('points', points);
+    // TODO OK
     const pointingTotal = points.reduce((total, numbers) => total + numbers, 0);
     return pointingTotal;
 };
 const maxPointing = (...weights) => {
-    // console.log('peso', weights);
+    // TODO OK
     const pointingMax = weights.reduce((total, numbers) => total + numbers * 10, 0);
     return pointingMax;
 };

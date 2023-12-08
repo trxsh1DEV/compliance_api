@@ -17,6 +17,7 @@ class Compliance {
                     remote: this.createStorageSchema(),
                 },
                 restoration: this.createRestorationSchema(),
+                description: { type: String },
             },
             server: this.createServersSchema(),
             ha: this.createHASchema(),
@@ -29,7 +30,6 @@ class Compliance {
             enabled: { type: Boolean, required: true, default: false },
             score: this.scoreTemplate(),
             weight: this.weightTemplate(6),
-            description: { type: String },
         };
     }
     createFrequencySchema() {
@@ -37,7 +37,6 @@ class Compliance {
             value: { type: Number, default: 0, required: true },
             score: this.scoreTemplate(),
             weight: this.weightTemplate(8),
-            description: { type: String },
         };
     }
     createStorageSchema() {
@@ -45,7 +44,6 @@ class Compliance {
             enabled: { type: Boolean, required: true },
             score: this.scoreTemplate(),
             weight: this.weightTemplate(9),
-            description: { type: String },
         };
     }
     createRestorationSchema() {
@@ -53,7 +51,6 @@ class Compliance {
             enabled: { type: Boolean, required: true, default: false },
             score: this.scoreTemplate(),
             weight: this.weightTemplate(9),
-            description: { type: String },
         };
     }
     // Servers
@@ -64,13 +61,27 @@ class Compliance {
                 {
                     server_name: { type: String, required: true },
                     systemOperation: this.createSystemOperationSchema(),
-                    config: { type: String, enum: ['low', 'medium', 'high'] },
-                    monitoringPerformance: { type: Boolean, required: true },
+                    config: this.createConfigServerSchema(),
+                    monitoringPerformance: this.createMonitoringServer(),
                     score: this.scoreTemplate(),
                     weight: this.weightTemplate(8),
                     description: { type: String },
                 },
             ],
+        };
+    }
+    createConfigServerSchema() {
+        return {
+            value: { type: String, enum: ['low', 'medium', 'high'], required: true },
+            score: this.scoreTemplate(),
+            weight: this.weightTemplate(7),
+        };
+    }
+    createMonitoringServer() {
+        return {
+            enabled: { type: Boolean, required: true },
+            score: this.scoreTemplate(),
+            weight: this.weightTemplate(7),
         };
     }
     createSystemOperationSchema() {
@@ -93,8 +104,6 @@ class Compliance {
                 type: [String],
                 enum: ['redundancy', 'load balance', 'failover', 'cluster', 'none'],
                 default: ['none'],
-                score: this.scoreTemplate(),
-                weight: this.weightTemplate(8),
             },
             tested: { type: Boolean, required: true },
             rto: {
@@ -105,6 +114,8 @@ class Compliance {
                     message: 'O tempo deve ser um numero que será convertido em horas e não deve ser um numero negativo',
                 },
             },
+            score: this.scoreTemplate(),
+            weight: this.weightTemplate(7),
         };
     }
     // HA
