@@ -8,7 +8,7 @@ class Compliance {
   constructor() {
     this.ComplianceSchema = new Schema<ICompliance>(
       {
-        complianceId: {
+        client: {
           type: Schema.Types.ObjectId,
           ref: 'Client',
           required: true,

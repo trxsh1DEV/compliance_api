@@ -4,9 +4,9 @@ import { Types } from 'mongoose';
 //   score: number;
 // }
 
-export interface IWeight {
-  weight: number;
-}
+// export interface IWeight {
+//   weight: number;
+// }
 
 export interface IBackupItems {
   policy: IBackup;
@@ -35,7 +35,7 @@ export interface IFrequency {
 export interface ISystemOperation {
   patching: 'Regular' | 'Irregular';
   score: number;
-  weight: IWeight;
+  weight: number;
 }
 
 export interface IServer {
@@ -44,7 +44,7 @@ export interface IServer {
   config: 'low' | 'medium' | 'high';
   monitoringPerformance: boolean;
   score: number;
-  weight: IWeight;
+  weight: number;
   description?: string;
 }
 
@@ -61,7 +61,7 @@ export interface IHA {
 }
 
 export interface ICompliance extends Document {
-  complianceId: Types.ObjectId;
+  client: Types.ObjectId;
   backup: IBackupItems;
   server: IServers;
   ha: IHA;

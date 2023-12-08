@@ -4,7 +4,7 @@ const mongoose_1 = require("mongoose");
 class Compliance {
     constructor() {
         this.ComplianceSchema = new mongoose_1.Schema({
-            complianceId: {
+            client: {
                 type: mongoose_1.Schema.Types.ObjectId,
                 ref: 'Client',
                 required: true,

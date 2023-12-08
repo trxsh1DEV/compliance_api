@@ -1,5 +1,6 @@
 import Clients from '../models/Clients';
 import { Request, Response } from 'express';
+import Compliance from '../models/Compliance';
 
 class ClientsController {
   async index(req: Request, res: Response) {
@@ -11,6 +12,22 @@ class ClientsController {
       return res.status(err.response.status).json({
         errors: [err.message],
       });
+    }
+  }
+
+  async show(req: Request, res: Response) {
+    const { id } = req.params;
+
+    try {
+      const client = await Clients.findById(id);
+
+      if (!client) {
+        return res.status(404).json({ errors: 'Client not found' });
+      }
+
+      res.status(200).json(client);
+    } catch (err: any) {
+      res.status(500).json({ errors: err.message });
     }
   }
 

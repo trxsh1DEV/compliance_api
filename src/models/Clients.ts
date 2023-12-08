@@ -4,7 +4,7 @@ import { Schema, model, Document, Types, Model } from 'mongoose';
 interface IClients extends Document {
   name: string;
   social_reason?: string;
-  complianceId: Types.ObjectId;
+  compliances: Types.ObjectId[];
 }
 
 // Definição da classe Clients
@@ -23,10 +23,12 @@ class Clients {
         social_reason: {
           type: String,
         },
-        complianceId: {
-          type: Schema.Types.ObjectId,
-          ref: 'Compliance',
-        },
+        compliances: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: 'Compliance',
+          },
+        ],
       },
       { timestamps: true },
     );

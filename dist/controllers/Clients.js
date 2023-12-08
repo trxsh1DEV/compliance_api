@@ -16,6 +16,19 @@ class ClientsController {
             });
         }
     }
+    async show(req, res) {
+        const { id } = req.params;
+        try {
+            const client = await Clients_1.default.findById(id);
+            if (!client) {
+                return res.status(404).json({ errors: 'Client not found' });
+            }
+            res.status(200).json(client);
+        }
+        catch (err) {
+            res.status(500).json({ errors: err.message });
+        }
+    }
     async store(req, res) {
         try {
             // Criar um novo cliente
