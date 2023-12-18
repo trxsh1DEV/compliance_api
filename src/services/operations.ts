@@ -17,10 +17,6 @@ export const calculatePointing = (infra: ICompliance) => {
     bkp = backupCalc(items.backup);
     // servers = ServersCalc(items.server) || [];
   });
-  // console.log(ha);
-  // console.log(servers);
-  // console.log(bkp);
-  // return null;
 };
 
 const backupCalc = (itemsBackup: IBackupItems) => {

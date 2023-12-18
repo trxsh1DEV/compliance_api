@@ -11,10 +11,6 @@ const calculatePointing = (infra) => {
         bkp = backupCalc(items.backup);
         // servers = ServersCalc(items.server) || [];
     });
-    // console.log(ha);
-    // console.log(servers);
-    // console.log(bkp);
-    // return null;
 };
 exports.calculatePointing = calculatePointing;
 const backupCalc = (itemsBackup) => {

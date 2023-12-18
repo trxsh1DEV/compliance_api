@@ -10,13 +10,13 @@ class Compliance {
                 required: true,
             },
             backup: {
-                policy: this.createPolicySchema(),
                 frequency: this.createFrequencySchema(),
+                restoration: this.createRestorationSchema(),
+                policy: this.createPolicySchema(),
                 storage: {
                     local: this.createStorageSchema(),
                     remote: this.createStorageSchema(),
                 },
-                restoration: this.createRestorationSchema(),
                 description: { type: String },
             },
             server: this.createServersSchema(),
@@ -27,28 +27,30 @@ class Compliance {
     // Funções de criação de esquemas tipadas
     createPolicySchema() {
         return {
-            enabled: { type: Boolean, required: true, default: false },
+            enabled: this.isEnable(),
             score: this.scoreTemplate(),
             weight: this.weightTemplate(6),
         };
     }
     createFrequencySchema() {
         return {
-            value: { type: Number, default: 0, required: true },
+            enabled: this.isEnable(),
+            level: { type: String, enum: ['low', 'medium', 'high'] },
             score: this.scoreTemplate(),
             weight: this.weightTemplate(8),
         };
     }
     createStorageSchema() {
         return {
-            enabled: { type: Boolean, required: true },
+            enabled: this.isEnable(),
+            qtde: { type: Number, default: 0 },
             score: this.scoreTemplate(),
             weight: this.weightTemplate(9),
         };
     }
     createRestorationSchema() {
         return {
-            enabled: { type: Boolean, required: true, default: false },
+            enabled: this.isEnable(),
             score: this.scoreTemplate(),
             weight: this.weightTemplate(9),
         };
@@ -56,10 +58,10 @@ class Compliance {
     // Servers
     createServersSchema() {
         return {
-            enabled: { type: Boolean, required: true, default: false },
+            enabled: this.isEnable(),
             servers: [
                 {
-                    server_name: { type: String, required: true },
+                    serverName: { type: String },
                     systemOperation: this.createSystemOperationSchema(),
                     config: this.createConfigServerSchema(),
                     monitoringPerformance: this.createMonitoringServer(),
@@ -72,14 +74,14 @@ class Compliance {
     }
     createConfigServerSchema() {
         return {
-            value: { type: String, enum: ['low', 'medium', 'high'], required: true },
+            level: { type: String, enum: ['low', 'medium', 'high'] },
             score: this.scoreTemplate(),
             weight: this.weightTemplate(7),
         };
     }
     createMonitoringServer() {
         return {
-            enabled: { type: Boolean, required: true },
+            enabled: this.isEnable(),
             score: this.scoreTemplate(),
             weight: this.weightTemplate(7),
         };
@@ -89,7 +91,6 @@ class Compliance {
             patching: {
                 type: String,
                 enum: ['Regular', 'Irregular'],
-                required: true,
             },
             score: this.scoreTemplate(),
             weight: this.weightTemplate(3),
@@ -99,22 +100,22 @@ class Compliance {
     // HA
     createHASchema() {
         return {
-            enabled: { type: Boolean, required: true, default: false },
+            enabled: this.isEnable(),
             solutions: {
                 type: [String],
                 enum: ['redundancy', 'load balance', 'failover', 'cluster', 'none'],
                 default: ['none'],
             },
-            tested: { type: Boolean, required: true },
+            tested: this.isEnable(),
             rto: {
                 type: Number,
-                required: true,
                 validate: {
                     validator: (value) => value >= 0,
                     message: 'O tempo deve ser um numero que será convertido em horas e não deve ser um numero negativo',
                 },
             },
             score: this.scoreTemplate(),
+            description: { type: String },
             weight: this.weightTemplate(7),
         };
     }
@@ -131,6 +132,13 @@ class Compliance {
         return {
             type: Number,
             default: numb,
+        };
+    }
+    isEnable() {
+        return {
+            type: Boolean,
+            required: true,
+            default: false,
         };
     }
 }

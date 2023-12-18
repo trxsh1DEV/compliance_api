@@ -42,7 +42,6 @@ class ComplianceController {
 
     try {
       const client = await Clients.findById(id);
-
       if (!client) {
         return res.status(404).json({ errors: 'Client not found' });
       }
@@ -64,18 +63,19 @@ class ComplianceController {
   }
 
   async store(req: Request, res: Response) {
-    const clientId = req.body.client;
+    // console.log('id', clientId);
+    // console.log('body: ----', req.body.data);
 
     try {
-      // Encontre o Client pelo ID
-      const client = await Clients.findById(clientId);
+      const client = await Clients.findOne({ id: req.body.client });
 
       if (!client) {
+        console.log('none client');
         return res.status(404).json({ error: 'Client not found' });
       }
 
       // Crie novas Compliances com base nos dados da solicitação
-      const compliances = await Compliance.create(req.body);
+      const compliances = await Compliance.create(req.body.data);
 
       // Certifique-se de que `compliances` é uma array
       const complianceIds = Array.isArray(compliances)
@@ -87,9 +87,10 @@ class ComplianceController {
       await client.save();
 
       // Envie a resposta com as Compliances associadas ao Client
+      console.log('---------------------------------------------------');
       res.status(201).json(compliances);
     } catch (error: any) {
-      // Trate erros aqui
+      console.log(error.message);
       res.status(500).json({ error: error.message });
     }
   }
