@@ -15,7 +15,21 @@ class App {
   }
 
   private middlewares(): void {
-    this.app.use(cors());
+    const allowedOrigins = ['http://localhost', 'http://179.213.2.192'];
+    this.app.use(
+      cors({
+        origin: (origin, callback) => {
+          if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+          } else {
+            callback(new Error('Origem não permitida pelo CORS'));
+          }
+        },
+        allowedHeaders: 'Content-Type,Authorization',
+        credentials: true,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      }),
+    );
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
     // Adicione outros middlewares conforme necessário, como expressJwt

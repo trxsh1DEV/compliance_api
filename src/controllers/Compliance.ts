@@ -5,13 +5,43 @@ import { calculatePointing } from '../services/operations';
 import Clients from '../models/Clients';
 
 class ComplianceController {
-  async index(req: Request, res: Response) {
-    const devices = await Compliance.find();
+  // async index(req: Request, res: Response) {
+  //   const devices = await Compliance.find();
 
+  //   try {
+  //     return res.status(200).json(devices);
+  //   } catch (err: any) {
+  //     return res.status(err.response.status).json({
+  //       errors: [err.message],
+  //     });
+  //   }
+  // }
+
+  async show(req: Request, res: Response) {
     try {
-      return res.status(200).json(devices);
+      const { id } = req.params;
+      const { complianceId } = req.params;
+
+      const compliance = await Compliance.findById(complianceId);
+
+      if (!compliance)
+        return res.status(404).json({ errors: ['Compliance não encontrado'] });
+
+      const client = await Clients.findById(id);
+      if (!client)
+        return res.status(404).json({ errors: ['Cliente não encontrado'] });
+
+      for (const item of client?.compliances) {
+        if (item._id.equals(complianceId)) {
+          return res.status(200).json(compliance);
+        }
+      }
+
+      return res.status(404).json({
+        errors: ['Compliance não encontrado nos (Compliances) desse cliente'],
+      });
     } catch (err: any) {
-      return res.status(err.response.status).json({
+      return res.status(500).json({
         errors: [err.message],
       });
     }
@@ -28,8 +58,8 @@ class ComplianceController {
         return res.status(404).json({ errors: ['Compliance não encontrado'] });
       }
 
-      const complianceCurrent = calculatePointing(compliance);
-      console.log(complianceCurrent);
+      const test = calculatePointing(compliance, id);
+      console.log(test);
       return res.status(200).json(compliance);
     } catch (err: any) {
       return res.status(500).json({
@@ -37,6 +67,7 @@ class ComplianceController {
       });
     }
   }
+
   async latestCompliance(req: Request, res: Response) {
     const { id } = req.params;
 
@@ -63,14 +94,10 @@ class ComplianceController {
   }
 
   async store(req: Request, res: Response) {
-    // console.log('id', clientId);
-    // console.log('body: ----', req.body.data);
-
     try {
       const client = await Clients.findOne({ id: req.body.client });
 
       if (!client) {
-        console.log('none client');
         return res.status(404).json({ error: 'Client not found' });
       }
 
@@ -86,8 +113,6 @@ class ComplianceController {
       client.compliances.push(...complianceIds);
       await client.save();
 
-      // Envie a resposta com as Compliances associadas ao Client
-      console.log('---------------------------------------------------');
       res.status(201).json(compliances);
     } catch (error: any) {
       console.log(error.message);

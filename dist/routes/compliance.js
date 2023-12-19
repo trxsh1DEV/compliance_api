@@ -10,4 +10,6 @@ const router = (0, express_1.Router)();
 router.post('/', Compliance_1.default.store);
 router.get('/latest/:id', Compliance_1.default.latestCompliance);
 router.get('/calculate/:id', Compliance_1.default.complianceCalculate);
+router.get('/:id/:complianceId', Compliance_1.default.show);
+// router.get('/', Compliance.index);
 exports.default = router;

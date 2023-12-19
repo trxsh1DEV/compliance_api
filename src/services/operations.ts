@@ -4,23 +4,73 @@ import {
   IHA,
   IServers,
 } from '../types/ModelTypesCompliance';
-import { PointsServer } from '../types/TypesVariableCompliance';
+import { GenericType } from '../types/TypesVariableCompliance';
+import { postDataInfra } from './saveDataInfra';
 
-export const calculatePointing = (infra: ICompliance) => {
+interface GenericInfraServerType extends GenericType {
+  serverName: string;
+}
+
+export const calculatePointing = (infra: ICompliance, complianceId: string) => {
   const infraArray = [infra];
-  let bkp: string | number = '';
-  let servers: PointsServer[] = [];
-  let ha: string | number = '';
+  let bkp: GenericType = { scores: 0, weights: 0 };
+  let servers: GenericInfraServerType[] = [];
+  let ha: GenericType = { scores: 0, weights: 0 };
 
   infraArray.forEach((items) => {
-    // ha = haCalc(items.ha);
+    ha = haCalc(items.ha);
     bkp = backupCalc(items.backup);
-    // servers = ServersCalc(items.server) || [];
+    servers = ServersCalc(items.server) || [];
   });
+
+  const averageHa = calculatePercentage(ha.scores, ha.weights);
+  const averageBkp = calculatePercentage(bkp.scores, bkp.weights);
+  const averageServer = servers.map((item) => {
+    return {
+      name: item.serverName,
+      pointing: calculatePercentage(item.scores, item.weights),
+    };
+  });
+
+  const serverTotalScores = servers.reduce(
+    (ac, current) => ac + current.scores,
+    0,
+  );
+  const serverTotalWeights = servers.reduce(
+    (ac, current) => ac + current.weights,
+    0,
+  );
+  const averageAllServers = calculatePercentage(
+    serverTotalScores,
+    serverTotalWeights,
+  );
+
+  const totalScores =
+    servers.reduce((ac, currentValue) => ac + currentValue.scores, 0) +
+    bkp.scores +
+    ha.scores;
+
+  const totalWeights =
+    servers.reduce((total, item) => total + item.weights, 0) +
+    bkp.weights +
+    ha.weights;
+
+  if (!averageBkp && !averageHa && !averageServer) return;
+  const totalScore = calculatePercentage(totalScores, totalWeights);
+
+  const averages: any = {
+    averageBkp,
+    averageHa,
+    averageServer,
+    averageAllServers,
+    totalScore,
+  };
+
+  postDataInfra(averages, complianceId);
+  return 'ok';
 };
 
 const backupCalc = (itemsBackup: IBackupItems) => {
-  // TODO OK
   const { policy, frequency, restoration } = itemsBackup;
   const { local, remote } = itemsBackup.storage;
 
@@ -46,28 +96,40 @@ const backupCalc = (itemsBackup: IBackupItems) => {
     restoration.weight,
   );
 
-  // console.log(totalPoints, maxPoints);
-
-  return calculatePercentage(totalPoints, maxPoints);
+  // return calculatePercentage(totalPoints, maxPoints);
+  return { scores: totalPoints, weights: maxPoints };
 };
 
 const ServersCalc = (itemsServer: IServers) => {
   const { enabled } = itemsServer;
   if (!enabled) return;
 
-  let pointsAllServers: PointsServer[] = [];
+  // let pointsAllServers: PointsServer[] = [];
+  let pointsAllServers: any = [];
   for (const obj of itemsServer.servers) {
-    const score = obj.score * obj.weight;
-    let totalPoints = pointTotalCalc(score);
-    let maxPoints = maxPointing(obj.weight);
+    let pointGeneral = obj.score * obj.weight;
+    let config = obj.config.score * obj.config.weight;
+    let so = obj.systemOperation.score * obj.systemOperation.weight;
+    let monitoring =
+      obj.monitoringPerformance.score * obj.monitoringPerformance.weight;
 
-    // console.log(totalPoints, maxPoints);
+    let totalPoints = pointTotalCalc(pointGeneral, config, so, monitoring);
 
-    const pointServer = calculatePercentage(totalPoints, maxPoints);
+    let maxPoints = maxPointing(
+      obj.weight,
+      obj.config.weight,
+      obj.monitoringPerformance.weight,
+      obj.systemOperation.weight,
+    );
 
-    pointsAllServers.push({ name: obj.server_name, pointing: pointServer });
+    pointsAllServers.push({
+      serverName: obj.serverName,
+      scores: totalPoints,
+      weights: maxPoints,
+    });
+
+    // pointsAllServers.push({ name: obj.serverName, pointing: pointServer });
   }
-  // pointsAllServers.map((item) => console.log(item.name, item.pointing));
   return pointsAllServers;
 };
 
@@ -75,18 +137,16 @@ const haCalc = (itemsHA: IHA) => {
   let totalPoints = pointTotalCalc(itemsHA.score * itemsHA.weight);
   let maxPoints = maxPointing(itemsHA.weight);
 
-  // console.log(totalPoints, maxPoints);
-  return calculatePercentage(totalPoints, maxPoints);
+  // return calculatePercentage(scores: totalPoints, maxPoints);
+  return { scores: totalPoints, weights: maxPoints };
 };
 
 const pointTotalCalc = (...points: Array<number>) => {
-  // TODO OK
   const pointingTotal = points.reduce((total, numbers) => total + numbers, 0);
   return pointingTotal;
 };
 
 const maxPointing = (...weights: Array<number>) => {
-  // TODO OK
   const pointingMax = weights.reduce(
     (total, numbers) => total + numbers * 10,
     0,
@@ -95,7 +155,6 @@ const maxPointing = (...weights: Array<number>) => {
 };
 
 const calculatePercentage = (pointingTotal: number, pointingMax: number) => {
-  // console.log('values final', pointingTotal, pointingMax);
   const porcentagem = (pointingTotal / pointingMax) * 100;
   return porcentagem.toFixed(2);
 };

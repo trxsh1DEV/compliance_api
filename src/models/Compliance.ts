@@ -22,9 +22,11 @@ class Compliance {
             remote: this.createStorageSchema(),
           },
           description: { type: String },
+          points: this.pointingTemplate(),
         },
         server: this.createServersSchema(),
         ha: this.createHASchema(),
+        totalScore: this.pointingTemplate(),
       },
       { timestamps: true },
     );
@@ -83,8 +85,10 @@ class Compliance {
           score: this.scoreTemplate(),
           weight: this.weightTemplate(8),
           description: { type: String },
+          points: this.pointingTemplate(),
         },
       ],
+      points: this.pointingTemplate(),
     };
   }
 
@@ -137,6 +141,7 @@ class Compliance {
       score: this.scoreTemplate(),
       description: { type: String },
       weight: this.weightTemplate(7),
+      points: this.pointingTemplate(),
     };
   }
 
@@ -161,6 +166,12 @@ class Compliance {
       type: Boolean,
       required: true,
       default: false,
+    };
+  }
+  pointingTemplate() {
+    return {
+      type: Number,
+      default: 0,
     };
   }
 }

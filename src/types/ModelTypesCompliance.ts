@@ -17,6 +17,8 @@ export interface IBackupItems {
     remote: IBackup;
   };
   restoration: IBackup;
+  description?: string;
+  points: number;
 }
 
 export interface IBackup {
@@ -55,18 +57,20 @@ interface IMonitoringPerformanceDocument {
 }
 
 export interface IServer {
-  server_name: string;
+  serverName: string;
   systemOperation: ISystemOperation;
   config: IConfigServerDocument;
   monitoringPerformance: IMonitoringPerformanceDocument;
   score: number;
   weight: number;
   description?: string;
+  points: number;
 }
 
 export interface IServers {
   enabled: boolean;
   servers: IServer[];
+  points: number;
 }
 
 export interface IHA {
@@ -82,6 +86,7 @@ export interface IHA {
   rto: number;
   score: number;
   weight: number;
+  points: number;
 }
 
 export interface ICompliance extends Document {
@@ -89,4 +94,5 @@ export interface ICompliance extends Document {
   backup: IBackupItems;
   server: IServers;
   ha: IHA;
+  totalScore: number;
 }
