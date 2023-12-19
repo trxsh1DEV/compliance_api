@@ -4,6 +4,7 @@ import deviceRoutes from './src/routes/devices';
 import deviceManualRoutes from './src/routes/devicesManual';
 import complianceRoutes from './src/routes/compliance';
 import clientsRoutes from './src/routes/clients';
+import authRoutes from './src/routes/auth';
 
 class App {
   public app: Application;
@@ -32,17 +33,12 @@ class App {
     );
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
-    // Adicione outros middlewares conforme necessário, como expressJwt
-    // this.app.use(
-    //   expressJwt({ secret: 'your-secret-key' }).unless({
-    //     path: ['/api/public-route'], // Rotas públicas excluídas da verificação do token
-    // })
-    // );
   }
 
   private routes(): void {
-    this.app.use('/api/devices/', deviceRoutes);
-    this.app.use('/api/devices-manual/', deviceManualRoutes);
+    // this.app.use('/api/devices/', deviceRoutes);
+    // this.app.use('/api/devices-manual/', deviceManualRoutes);
+    this.app.use('/api/auth/', authRoutes);
     this.app.use('/api/compliance/', complianceRoutes);
     this.app.use('/api/clients/', clientsRoutes);
   }

@@ -1,4 +1,4 @@
-import Compliance from '../models/Compliance';
+import Compliance from '../../models/Compliance';
 
 export type averageInfraType = {
   averageBkp: number;

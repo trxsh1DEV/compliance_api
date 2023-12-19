@@ -3,11 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Clients_1 = __importDefault(require("../models/Clients"));
+// import Compliance from '../models/Compliance';
+const clientService_1 = __importDefault(require("../services/users/clientService"));
+const mongoose_1 = require("mongoose");
 class ClientsController {
-    async index(req, res) {
-        const clients = await Clients_1.default.find();
+    async findAllClients(req, res) {
         try {
+            const clients = await clientService_1.default.findAll();
+            if (clients.length <= 0) {
+                return res.status(404).json({
+                    errors: 'There are no registered users',
+                });
+            }
             return res.status(200).json(clients);
         }
         catch (err) {
@@ -17,30 +24,62 @@ class ClientsController {
         }
     }
     async show(req, res) {
-        const { id } = req.params;
         try {
-            const client = await Clients_1.default.findById(id);
-            if (!client) {
-                return res.status(404).json({ errors: 'Client not found' });
-            }
-            res.status(200).json(client);
-        }
-        catch (err) {
-            res.status(500).json({ errors: err.message });
-        }
-    }
-    async store(req, res) {
-        try {
-            // Criar um novo cliente
-            const newClient = new Clients_1.default(req.body);
-            const savedClient = await newClient.save();
-            return res.status(201).json(savedClient);
+            const { id } = req.params;
+            if (!(0, mongoose_1.isValidObjectId)(id))
+                return res.status(400).json({ errors: 'ID inválido' });
+            const client = await clientService_1.default.show(id);
+            if (!client)
+                return res.status(404).json({
+                    errors: 'Client not found',
+                });
+            return res.status(200).json(client);
         }
         catch (err) {
             return res.status(400).json({
                 errors: [err.message],
             });
         }
+    }
+    async store(req, res) {
+        try {
+            const { name, social_reason, email, password, avatar } = req.body;
+            if (!name || !email || !password || !avatar) {
+                return res.status(400).json({
+                    errors: 'Submit all fields for registration',
+                });
+            }
+            const newClient = await clientService_1.default.create(req.body);
+            if (!newClient)
+                res.status(404).json({ errors: 'Error creating client' });
+            return res
+                .status(201)
+                .json({ id: newClient._id, name, email, avatar, social_reason });
+        }
+        catch (err) {
+            return res.status(400).json({
+                errors: [err.message],
+            });
+        }
+    }
+    async update(req, res) {
+        const { name, social_reason, email, password, avatar } = req.body;
+        const { id } = req.params;
+        if (!name && !email && !password && !avatar && !social_reason) {
+            return res.status(400).json({
+                errors: 'Submit at least one for update',
+            });
+        }
+        if (!(0, mongoose_1.isValidObjectId)(id))
+            return res.status(400).json({ errors: 'ID inválido' });
+        const client = await clientService_1.default.show(id);
+        if (!client)
+            return res.status(404).json({
+                errors: 'Client not found',
+            });
+        const clientData = { id, name, social_reason, email, password, avatar };
+        await clientService_1.default.update(clientData);
+        res.status(200).json({ message: 'Client updated successfully' });
     }
 }
 exports.default = new ClientsController();

@@ -1,10 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-// Definição da classe Clients
 class Clients {
     constructor() {
-        // Definição do Schema com a interface IClients
         this.ClientsSchema = new mongoose_1.Schema({
             name: {
                 type: String,
@@ -12,6 +10,20 @@ class Clients {
             },
             social_reason: {
                 type: String,
+            },
+            email: {
+                type: String,
+                required: true,
+                unique: true,
+            },
+            password: {
+                type: String,
+                required: true,
+                select: false,
+            },
+            avatar: {
+                type: String,
+                required: true,
             },
             compliances: [
                 {

@@ -4,10 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const Clients_1 = __importDefault(require("../controllers/Clients"));
+const authController_1 = __importDefault(require("../controllers/authController"));
 const router = (0, express_1.Router)();
-router.post('/', Clients_1.default.store);
-router.get('/', Clients_1.default.findAllClients);
-router.get('/:id', Clients_1.default.show);
-router.patch('/:id', Clients_1.default.update);
+router.post('/login', authController_1.default.login);
 exports.default = router;

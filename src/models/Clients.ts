@@ -1,19 +1,19 @@
 import { Schema, model, Document, Types, Model } from 'mongoose';
 
-// Interface representando a estrutura do documento Clients
 interface IClients extends Document {
   name: string;
   social_reason?: string;
+  email: string;
+  password: string;
+  avatar: string;
   compliances: Types.ObjectId[];
 }
 
-// Definição da classe Clients
 class Clients {
-  public ClientsSchema: Schema<IClients>; // Uso da interface IClients para tipar o Schema
-  public ClientsModel: Model<IClients>; // Uso da interface IClients para tipar o modelo
+  public ClientsSchema: Schema<IClients>;
+  public ClientsModel: Model<IClients>;
 
   constructor() {
-    // Definição do Schema com a interface IClients
     this.ClientsSchema = new Schema<IClients>(
       {
         name: {
@@ -22,6 +22,20 @@ class Clients {
         },
         social_reason: {
           type: String,
+        },
+        email: {
+          type: String,
+          required: true,
+          unique: true,
+        },
+        password: {
+          type: String,
+          required: true,
+          select: false,
+        },
+        avatar: {
+          type: String,
+          required: true,
         },
         compliances: [
           {

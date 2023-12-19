@@ -3,9 +3,9 @@ import {
   ICompliance,
   IHA,
   IServers,
-} from '../types/ModelTypesCompliance';
-import { GenericType } from '../types/TypesVariableCompliance';
-import { postDataInfra } from './saveDataInfra';
+} from '../../types/ModelTypesCompliance';
+import { GenericType } from '../../types/TypesVariableCompliance';
+import { postDataInfra } from '../Data/saveDataInfra';
 
 interface GenericInfraServerType extends GenericType {
   serverName: string;
