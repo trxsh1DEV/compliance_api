@@ -4,8 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // import Compliance from '../models/Compliance';
-const clientService_1 = __importDefault(require("../services/users/clientService"));
-const mongoose_1 = require("mongoose");
+const clientService_1 = __importDefault(require("../services/clients/clientService"));
 class ClientsController {
     async findAllClients(req, res) {
         try {
@@ -15,6 +14,7 @@ class ClientsController {
                     errors: 'There are no registered users',
                 });
             }
+            console.log(req.body.clientId);
             return res.status(200).json(clients);
         }
         catch (err) {
@@ -25,14 +25,7 @@ class ClientsController {
     }
     async show(req, res) {
         try {
-            const { id } = req.params;
-            if (!(0, mongoose_1.isValidObjectId)(id))
-                return res.status(400).json({ errors: 'ID inválido' });
-            const client = await clientService_1.default.show(id);
-            if (!client)
-                return res.status(404).json({
-                    errors: 'Client not found',
-                });
+            const client = req.response;
             return res.status(200).json(client);
         }
         catch (err) {
@@ -64,19 +57,12 @@ class ClientsController {
     }
     async update(req, res) {
         const { name, social_reason, email, password, avatar } = req.body;
-        const { id } = req.params;
+        const { id } = req;
         if (!name && !email && !password && !avatar && !social_reason) {
             return res.status(400).json({
                 errors: 'Submit at least one for update',
             });
         }
-        if (!(0, mongoose_1.isValidObjectId)(id))
-            return res.status(400).json({ errors: 'ID inválido' });
-        const client = await clientService_1.default.show(id);
-        if (!client)
-            return res.status(404).json({
-                errors: 'Client not found',
-            });
         const clientData = { id, name, social_reason, email, password, avatar };
         await clientService_1.default.update(clientData);
         res.status(200).json({ message: 'Client updated successfully' });

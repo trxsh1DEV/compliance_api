@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.calculatePointing = void 0;
-const saveDataInfra_1 = require("../Data/saveDataInfra");
+const saveDataInfra_1 = require("../data/saveDataInfra");
 const calculatePointing = (infra, complianceId) => {
     const infraArray = [infra];
     let bkp = { scores: 0, weights: 0 };

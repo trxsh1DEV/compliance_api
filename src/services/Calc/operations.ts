@@ -5,7 +5,7 @@ import {
   IServers,
 } from '../../types/ModelTypesCompliance';
 import { GenericType } from '../../types/TypesVariableCompliance';
-import { postDataInfra } from '../Data/saveDataInfra';
+import { postDataInfra } from '../data/saveDataInfra';
 
 interface GenericInfraServerType extends GenericType {
   serverName: string;

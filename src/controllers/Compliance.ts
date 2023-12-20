@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import Compliance from '../models/Compliance';
-import { calculatePointing } from '../services/Calc/operations';
+import { calculatePointing } from '../services/calc/operations';
 import Clients from '../models/Clients';
 
 class ComplianceController {

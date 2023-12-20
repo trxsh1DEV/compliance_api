@@ -1,7 +1,11 @@
 import { Request, Response } from 'express';
 // import Compliance from '../models/Compliance';
-import clientService from '../services/users/clientService';
-import { isValidObjectId } from 'mongoose';
+import clientService from '../services/clients/clientService';
+
+interface responseType {
+  id: string;
+  response: any;
+}
 
 class ClientsController {
   async findAllClients(req: Request, res: Response) {
@@ -13,7 +17,7 @@ class ClientsController {
           errors: 'There are no registered users',
         });
       }
-
+      console.log(req.body.clientId);
       return res.status(200).json(clients);
     } catch (err: any) {
       return res.status(err.response.status).json({
@@ -22,17 +26,9 @@ class ClientsController {
     }
   }
 
-  async show(req: Request, res: Response) {
+  async show(req: any, res: Response) {
     try {
-      const { id } = req.params;
-      if (!isValidObjectId(id))
-        return res.status(400).json({ errors: 'ID inválido' });
-
-      const client = await clientService.show(id);
-      if (!client)
-        return res.status(404).json({
-          errors: 'Client not found',
-        });
+      const client = req.response;
 
       return res.status(200).json(client);
     } catch (err: any) {
@@ -63,9 +59,9 @@ class ClientsController {
       });
     }
   }
-  async update(req: Request, res: Response) {
+  async update(req: any, res: Response) {
     const { name, social_reason, email, password, avatar } = req.body;
-    const { id } = req.params;
+    const { id } = req;
 
     if (!name && !email && !password && !avatar && !social_reason) {
       return res.status(400).json({
@@ -73,15 +69,6 @@ class ClientsController {
       });
     }
 
-    if (!isValidObjectId(id))
-      return res.status(400).json({ errors: 'ID inválido' });
-
-    const client = await clientService.show(id);
-
-    if (!client)
-      return res.status(404).json({
-        errors: 'Client not found',
-      });
     const clientData = { id, name, social_reason, email, password, avatar };
 
     await clientService.update(clientData);

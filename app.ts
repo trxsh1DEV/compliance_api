@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
 import cors from 'cors';
-import deviceRoutes from './src/routes/devices';
-import deviceManualRoutes from './src/routes/devicesManual';
+// import deviceRoutes from './src/routes/devices';
+// import deviceManualRoutes from './src/routes/devicesManual';
 import complianceRoutes from './src/routes/compliance';
 import clientsRoutes from './src/routes/clients';
 import authRoutes from './src/routes/auth';

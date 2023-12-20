@@ -1,4 +1,5 @@
 import { Schema, model, Document, Types, Model } from 'mongoose';
+import bcrypt from 'bcrypt';
 
 interface IClients extends Document {
   name: string;
@@ -46,6 +47,16 @@ class Clients {
       },
       { timestamps: true },
     );
+    this.ClientsSchema.pre('save', async function (next) {
+      if (!this.isModified('password')) return next();
+
+      try {
+        this.password = await bcrypt.hash(this.password, 8);
+        next();
+      } catch (err: any) {
+        return next(err);
+      }
+    });
 
     this.ClientsModel = model<IClients>('Clients', this.ClientsSchema);
   }

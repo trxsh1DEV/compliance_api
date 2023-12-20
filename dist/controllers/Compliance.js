@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Compliance_1 = __importDefault(require("../models/Compliance"));
-const operations_1 = require("../services/Calc/operations");
+const operations_1 = require("../services/calc/operations");
 const Clients_1 = __importDefault(require("../models/Clients"));
 class ComplianceController {
     // async index(req: Request, res: Response) {
