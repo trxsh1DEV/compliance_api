@@ -1,4 +1,4 @@
-import Compliance from '../../models/Compliance';
+import { ICompliance } from '../../types/ModelTypesCompliance';
 
 export type averageInfraType = {
   averageBkp: number;
@@ -13,8 +13,11 @@ export type averageInfraType = {
   totalScore: number;
 };
 
-export const postDataInfra = async (infra: averageInfraType, id: string) => {
-  const compliance = await Compliance.findById(id);
+export const postDataInfra = async (
+  infra: averageInfraType,
+  compliance: ICompliance,
+  id: string,
+) => {
   if (!compliance) return;
 
   compliance.backup.points = infra.averageBkp;
@@ -26,6 +29,6 @@ export const postDataInfra = async (infra: averageInfraType, id: string) => {
     if (!isNaN(scoreNumber) && scoreNumber) item.points = scoreNumber;
   });
 
-  await compliance.save();
-  console.log(compliance.server.servers);
+  await compliance.save({ validateModifiedOnly: true });
+  return compliance;
 };

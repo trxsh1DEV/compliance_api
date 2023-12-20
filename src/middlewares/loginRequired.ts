@@ -1,13 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import Clients from '../models/Clients';
 import ClienteService from '../services/clients/clientService';
-
-interface typeId {
-  id: string;
-  iat: number;
-  exp: number;
-}
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;

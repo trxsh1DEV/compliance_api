@@ -11,7 +11,23 @@ interface GenericInfraServerType extends GenericType {
   serverName: string;
 }
 
-export const calculatePointing = (infra: ICompliance, complianceId: string) => {
+export type averageInfraType = {
+  averageBkp: number | string;
+  averageHa: number | string;
+  averageServer: [
+    {
+      name: string;
+      pointing: string;
+    },
+  ];
+  averageAllServers: number | string;
+  totalScore: number | string;
+};
+
+export const calculatePointing = async (
+  infra: ICompliance,
+  complianceId: string,
+) => {
   const infraArray = [infra];
   let bkp: GenericType = { scores: 0, weights: 0 };
   let servers: GenericInfraServerType[] = [];
@@ -56,7 +72,7 @@ export const calculatePointing = (infra: ICompliance, complianceId: string) => {
     ha.weights;
 
   if (!averageBkp && !averageHa && !averageServer) return;
-  const totalScore = calculatePercentage(totalScores, totalWeights);
+  const totalScore = parseFloat(calculatePercentage(totalScores, totalWeights));
 
   const averages: any = {
     averageBkp,
@@ -66,8 +82,24 @@ export const calculatePointing = (infra: ICompliance, complianceId: string) => {
     totalScore,
   };
 
-  postDataInfra(averages, complianceId);
-  return 'ok';
+  try {
+    const data = await postDataInfra(averages, infra, complianceId);
+    // await Compliance.findByIdAndUpdate(
+    //   complianceId,
+    //   {
+    //     $set: {
+    //       'backup.points': averageBkp,
+    //       'server.servers.points': serversScore, //Não funciona, pois n tem como aplicar uma logica de for para percorrer os indices
+    //       'server.points': averageAllServers,
+    //       'ha.points': averageHa,
+    //     },
+    //   },
+    //   { new: true },
+    // );
+    return data;
+  } catch (err: any) {
+    return err.message;
+  }
 };
 
 const backupCalc = (itemsBackup: IBackupItems) => {

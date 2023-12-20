@@ -58,8 +58,7 @@ class ComplianceController {
         return res.status(404).json({ errors: ['Compliance não encontrado'] });
       }
 
-      const test = calculatePointing(compliance, id);
-      console.log(test);
+      await calculatePointing(compliance, id);
       return res.status(200).json(compliance);
     } catch (err: any) {
       return res.status(500).json({

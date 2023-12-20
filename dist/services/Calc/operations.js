@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.calculatePointing = void 0;
 const saveDataInfra_1 = require("../data/saveDataInfra");
-const calculatePointing = (infra, complianceId) => {
+const calculatePointing = async (infra, complianceId) => {
     const infraArray = [infra];
     let bkp = { scores: 0, weights: 0 };
     let servers = [];
@@ -31,7 +31,7 @@ const calculatePointing = (infra, complianceId) => {
         ha.weights;
     if (!averageBkp && !averageHa && !averageServer)
         return;
-    const totalScore = calculatePercentage(totalScores, totalWeights);
+    const totalScore = parseFloat(calculatePercentage(totalScores, totalWeights));
     const averages = {
         averageBkp,
         averageHa,
@@ -39,8 +39,25 @@ const calculatePointing = (infra, complianceId) => {
         averageAllServers,
         totalScore,
     };
-    (0, saveDataInfra_1.postDataInfra)(averages, complianceId);
-    return 'ok';
+    try {
+        const data = await (0, saveDataInfra_1.postDataInfra)(averages, infra, complianceId);
+        // await Compliance.findByIdAndUpdate(
+        //   complianceId,
+        //   {
+        //     $set: {
+        //       'backup.points': averageBkp,
+        //       'server.servers.points': serversScore, //Não funciona, pois n tem como aplicar uma logica de for para percorrer os indices
+        //       'server.points': averageAllServers,
+        //       'ha.points': averageHa,
+        //     },
+        //   },
+        //   { new: true },
+        // );
+        return data;
+    }
+    catch (err) {
+        return err.message;
+    }
 };
 exports.calculatePointing = calculatePointing;
 const backupCalc = (itemsBackup) => {
