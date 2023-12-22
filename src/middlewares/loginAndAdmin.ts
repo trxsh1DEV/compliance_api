@@ -20,7 +20,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     if (!client) {
       return res.status(401).json({
-        errors: ['Client invalid'],
+        errors: ['Token Client invalid'],
       });
     }
 

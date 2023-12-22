@@ -13,6 +13,8 @@ class AuthController {
             const passwordIsValid = bcrypt_1.default.compareSync(password, client && client.password);
             if (!passwordIsValid || client == '')
                 return res.status(404).json({ errors: ['Wrong credentials'] });
+            if (!client || !client.isAdmin)
+                return res.status(404).json({ errors: ['Wrong credentials'] }); //New
             const token = (0, loginService_1.generateToken)(client.id, client.isAdmin);
             return res.status(200).json({ token });
         }

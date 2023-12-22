@@ -2,22 +2,22 @@ import Clients from '../../models/Clients';
 import { ClientType } from '../../types/ControllersType';
 
 class ClienteService {
-  static create(body: ClientType) {
-    return Clients.create(body);
+  static async create(body: ClientType) {
+    return await Clients.create(body);
   }
 
-  static findAll() {
-    return Clients.find();
+  static async findAll() {
+    return await Clients.find();
   }
 
-  static show(id: string) {
-    return Clients.findById(id);
+  static async show(id: string) {
+    return await Clients.findById(id);
   }
 
-  static update(clientData: ClientType) {
+  static async update(clientData: ClientType) {
     const { avatar, email, id, name, password, social_reason, isAdmin } =
       clientData;
-    return Clients.findOneAndUpdate(
+    return await Clients.findOneAndUpdate(
       { _id: id },
       {
         avatar,
@@ -28,6 +28,10 @@ class ClienteService {
         isAdmin,
       },
     );
+  }
+
+  static async delete(id: string){
+    return await Clients.findOneAndDelete({_id: id})
   }
 }
 

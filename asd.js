@@ -35,6 +35,7 @@ function calcularPontuacaoTotal(itens) {
   // Calcula a porcentagem de pontuação em relação à pontuação máxima possível
   console.log(pontuacaoMaxima, pontuacaoTotal);
   const porcentagem = (pontuacaoTotal / pontuacaoMaxima) * 100;
+  console.log(-1 || 'alow');
 
   // console.log(porcentagem);
   // Retorna a porcentagem formatada com duas casas decimais

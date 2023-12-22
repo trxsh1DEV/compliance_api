@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-
-import Compliance from '../models/Compliance';
-import { calculatePointing } from '../services/calc/operations';
-import Clients from '../models/Clients';
+import { calculatePointing } from '../services/Calc/operations';
+import { isValidObjectId } from 'mongoose';
+import complianceService from '../services/compliance/complianceService'
+import clientService from '../services/clients/clientService';
 
 class ComplianceController {
   // async index(req: Request, res: Response) {
@@ -20,19 +20,17 @@ class ComplianceController {
   async show(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { complianceId } = req.params;
+      const { complianceId } = req.body;
 
-      const compliance = await Compliance.findById(complianceId);
-
-      if (!compliance)
-        return res.status(404).json({ errors: ['Compliance não encontrado'] });
-
-      const client = await Clients.findById(id);
+      const client = await clientService.show(id);
       if (!client)
-        return res.status(404).json({ errors: ['Cliente não encontrado'] });
+        return res.status(404).json({ errors: ['Client Not Found'] });
 
       for (const item of client?.compliances) {
         if (item._id.equals(complianceId)) {
+          const compliance = await complianceService.show(complianceId);
+          if (!compliance) return res.status(404).json({ errors: ['Compliance Not Found'] });
+
           return res.status(200).json(compliance);
         }
       }
@@ -52,7 +50,7 @@ class ComplianceController {
       const { id } = req.params;
 
       // Encontrar o Compliance pelo ID
-      const compliance = await Compliance.findOne({ _id: id });
+      const compliance = await complianceService.show(id);
 
       if (!compliance) {
         return res.status(404).json({ errors: ['Compliance não encontrado'] });
@@ -68,23 +66,13 @@ class ComplianceController {
   }
 
   async latestCompliance(req: Request, res: Response) {
-    const { id } = req.params;
-
     try {
-      const client = await Clients.findById(id);
-      if (!client) {
-        return res.status(404).json({ errors: 'Client not found' });
-      }
-
-      const latestCompliance = await Compliance.findOne({ client: id }).sort({
-        createdAt: -1,
-      });
+      const latestCompliance = await complianceService.latest()
 
       if (!latestCompliance) {
-        return res
-          .status(404)
-          .json({ errors: 'None compliance found for there client' });
+        return res.status(404).json({ errors: 'Compliance Not Found' });
       }
+      console.log(latestCompliance)
 
       return res.status(200).json(latestCompliance);
     } catch (err: any) {
@@ -94,18 +82,14 @@ class ComplianceController {
 
   async store(req: Request, res: Response) {
     try {
-      if (!req.body.isAdmin && req.body.data.client !== req.body.clientId) {
-        return res.status(401).json({ error: ['Unauthorized'] });
-      }
-
-      const client = await Clients.findOne({ id: req.body.client });
+      const client = await clientService.show(req.body.data.client);
 
       if (!client) {
         return res.status(404).json({ error: ['Client not found'] });
       }
 
       // Crie novas Compliances com base nos dados da solicitação
-      const compliances = await Compliance.create(req.body.data);
+      const compliances = await complianceService.store(req.body.data);
 
       // Certifique-se de que `compliances` é uma array
       const complianceIds = Array.isArray(compliances)
@@ -114,12 +98,81 @@ class ComplianceController {
 
       // Associe as Compliances ao campo 'compliances' do Client
       client.compliances.push(...complianceIds);
-      await client.save();
+      await client.save({validateModifiedOnly: true});
 
       res.status(201).json(compliances);
     } catch (error: any) {
       console.log(error.message);
       res.status(500).json({ error: error.message });
+    }
+  }
+
+  async update(req: Request, res: Response) {
+      try {
+        const { id } = req.params;
+        const { compliance: complianceId } = req.body.data;
+
+        if (!isValidObjectId(id) || !isValidObjectId(complianceId)) return res.status(400).json({ errors: 'ID inválido' });
+
+      const client = await clientService.show(id);
+
+      if (!client) return res.status(404).json({ errors: ['Cliente não encontrado'] });
+
+        for (const item of client?.compliances) {
+          if (item._id.equals(complianceId)) {
+            const dataInfra = req.body.data;
+
+            if(!dataInfra.server && !dataInfra.ha && !dataInfra.backup){
+              return res.status(400).json({
+                errors: 'Submit at least one for update',
+              });
+            }
+
+            await complianceService.update(dataInfra);
+            return res.status(200).json({message: 'Compliance updated successfully'});
+          }
+        }
+
+        return res.status(404).json({
+          errors: ['Compliance não encontrado nos (Compliances) desse cliente'],
+        });
+      } catch (err: any) {
+        return res.status(500).json({
+          errors: [err.message],
+        });
+      }
+  }
+
+  async delete(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { complianceId } = req.body;
+
+      const client = await clientService.show(id);
+      if (!client)
+        return res.status(404).json({ errors: ['Client Not Found'] });
+
+      for (const item of client?.compliances) {
+        if (item._id.equals(complianceId)) {
+          const compliance = await complianceService.show(complianceId);
+          if (!compliance) return res.status(404).json({ errors: ['Compliance Not Found or Removed'] });
+
+          const removeIndex = client.compliances.findIndex((item) => item._id.equals(complianceId))
+          if(removeIndex !== -1){
+            client.compliances.splice(removeIndex, 1);
+            await client.save({ validateModifiedOnly: true });
+          }
+          return res.status(200).json(compliance);
+        }
+      }
+
+      return res.status(404).json({
+        errors: ['Compliance não encontrado nos (Compliances) desse cliente'],
+      });
+    } catch (err: any) {
+      return res.status(500).json({
+        errors: [err.message],
+      });
     }
   }
 }

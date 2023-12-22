@@ -4,11 +4,11 @@ import loginAndAdmin from '../middlewares/loginAndAdmin';
 
 const router = Router();
 
-// router.get('/:id', Compliance.complianceCalculate);
 router.post('/', loginAndAdmin, Compliance.store);
-router.get('/latest/:id', Compliance.latestCompliance);
+router.get('/latest/', Compliance.latestCompliance);
 router.get('/calculate/:id', Compliance.complianceCalculate);
-router.get('/:id/:complianceId', Compliance.show);
-// router.get('/', Compliance.index);
+router.get('/:id', loginAndAdmin, Compliance.show);
+router.patch('/:id', loginAndAdmin, Compliance.update);
+router.delete('/:id', loginAndAdmin, Compliance.delete);
 
 export default router;

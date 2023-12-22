@@ -96,6 +96,28 @@ class ClientsController {
       });
     }
   }
+
+  async delete(req: any, res: Response) {
+    try {
+      const { id } = req.params;
+
+      if (!isValidObjectId(id))
+        return res.status(400).json({ errors: ['ID inválido'] });
+
+      const client = await clientService.delete(id);
+
+      if (!client)
+        return res.status(404).json({
+          errors: 'Client not found',
+        });
+
+      return res.status(200).json({message: 'Client removed successfully'});
+    } catch (err: any) {
+      return res.status(400).json({
+        errors: [err.message],
+      });
+    }
+  }
 }
 
 export default new ClientsController();

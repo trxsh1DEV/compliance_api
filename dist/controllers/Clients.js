@@ -92,5 +92,23 @@ class ClientsController {
             });
         }
     }
+    async delete(req, res) {
+        try {
+            const { id } = req.params;
+            if (!(0, mongoose_1.isValidObjectId)(id))
+                return res.status(400).json({ errors: ['ID inválido'] });
+            const client = await clientService_1.default.delete(id);
+            if (!client)
+                return res.status(404).json({
+                    errors: 'Client not found',
+                });
+            return res.status(200).json({ message: 'Client removed successfully' });
+        }
+        catch (err) {
+            return res.status(400).json({
+                errors: [err.message],
+            });
+        }
+    }
 }
 exports.default = new ClientsController();
