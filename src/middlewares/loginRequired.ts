@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import ClienteService from '../services/clients/clientService';
 
 export default async (req: Request, res: Response, next: NextFunction) => {

@@ -13,9 +13,9 @@ class AuthController {
         client && client.password,
       );
       if (!passwordIsValid || client == '')
-        return res.status(404).json({ errors: 'Wrong credentials' });
+        return res.status(404).json({ errors: ['Wrong credentials'] });
 
-      const token = generateToken(client.id);
+      const token = generateToken(client.id, client.isAdmin);
 
       return res.status(200).json({ token });
     } catch (err: any) {

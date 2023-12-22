@@ -7,6 +7,7 @@ interface IClients extends Document {
   email: string;
   password: string;
   avatar: string;
+  isAdmin?: boolean;
   compliances: Types.ObjectId[];
 }
 
@@ -36,7 +37,11 @@ class Clients {
         },
         avatar: {
           type: String,
-          required: true,
+          default: 'https://cdn-icons-png.flaticon.com/512/747/747376.png',
+        },
+        isAdmin: {
+          type: Boolean,
+          default: false,
         },
         compliances: [
           {

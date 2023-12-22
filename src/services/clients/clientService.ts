@@ -1,10 +1,6 @@
 import Clients from '../../models/Clients';
 import { ClientType } from '../../types/ControllersType';
 
-interface ClientTypeId extends ClientType {
-  id: string;
-}
-
 class ClienteService {
   static create(body: ClientType) {
     return Clients.create(body);
@@ -18,8 +14,9 @@ class ClienteService {
     return Clients.findById(id);
   }
 
-  static update(clientData: ClientTypeId) {
-    const { avatar, email, id, name, password, social_reason } = clientData;
+  static update(clientData: ClientType) {
+    const { avatar, email, id, name, password, social_reason, isAdmin } =
+      clientData;
     return Clients.findOneAndUpdate(
       { _id: id },
       {
@@ -28,6 +25,7 @@ class ClienteService {
         name,
         password,
         social_reason,
+        isAdmin,
       },
     );
   }

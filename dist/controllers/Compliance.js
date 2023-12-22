@@ -82,9 +82,12 @@ class ComplianceController {
     }
     async store(req, res) {
         try {
+            if (!req.body.isAdmin && req.body.data.client !== req.body.clientId) {
+                return res.status(401).json({ error: ['Unauthorized'] });
+            }
             const client = await Clients_1.default.findOne({ id: req.body.client });
             if (!client) {
-                return res.status(404).json({ error: 'Client not found' });
+                return res.status(404).json({ error: ['Client not found'] });
             }
             // Crie novas Compliances com base nos dados da solicitação
             const compliances = await Compliance_1.default.create(req.body.data);

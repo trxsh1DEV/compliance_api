@@ -4,4 +4,6 @@ export interface ClientType {
   email: string;
   password: string;
   avatar: string;
+  id: string;
+  isAdmin: boolean;
 }
