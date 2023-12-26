@@ -21,7 +21,7 @@ class Compliance {
             local: this.createStorageSchema(),
             remote: this.createStorageSchema(),
           },
-          description: { type: String },
+          description: { type: String, required: true },
           points: this.pointingTemplate(),
         },
         server: this.createServersSchema(),
@@ -88,6 +88,7 @@ class Compliance {
           points: this.pointingTemplate(),
         },
       ],
+      description: { type: String, required: true },
       points: this.pointingTemplate(),
     };
   }
