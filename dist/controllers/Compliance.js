@@ -3,10 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const operations_1 = require("../services/Calc/operations");
 const mongoose_1 = require("mongoose");
 const complianceService_1 = __importDefault(require("../services/compliance/complianceService"));
 const clientService_1 = __importDefault(require("../services/clients/clientService"));
+const operations_1 = require("../services/calc/operations");
 class ComplianceController {
     // async index(req: Request, res: Response) {
     //   const devices = await Compliance.find();
@@ -20,8 +20,9 @@ class ComplianceController {
     // }
     async show(req, res) {
         try {
-            const { id } = req.params;
-            const { complianceId } = req.body;
+            const { complianceId } = req.params;
+            // Se no body da requisição não especificar um cliente por padrão vou pegar o clientID q está no próprio token do user logado
+            const id = req.body.client || req.body.clientId;
             const client = await clientService_1.default.show(id);
             if (!client)
                 return res.status(404).json({ errors: ['Client Not Found'] });
@@ -74,10 +75,11 @@ class ComplianceController {
         }
     }
     async store(req, res) {
+        console.log(req.body.clientId);
         try {
             const client = await clientService_1.default.show(req.body.data.client);
             if (!client) {
-                return res.status(404).json({ error: ['Client not found'] });
+                return res.status(404).json({ errors: ['Client not found'] });
             }
             // Crie novas Compliances com base nos dados da solicitação
             const compliances = await complianceService_1.default.store(req.body.data);
@@ -90,9 +92,9 @@ class ComplianceController {
             await client.save({ validateModifiedOnly: true });
             res.status(201).json(compliances);
         }
-        catch (error) {
-            console.log(error.message);
-            res.status(500).json({ error: error.message });
+        catch (err) {
+            console.log(err.message);
+            res.status(500).json({ errors: [err.message] });
         }
     }
     async update(req, res) {
@@ -113,7 +115,9 @@ class ComplianceController {
                         });
                     }
                     await complianceService_1.default.update(dataInfra);
-                    return res.status(200).json({ message: 'Compliance updated successfully' });
+                    return res
+                        .status(200)
+                        .json({ message: 'Compliance updated successfully' });
                 }
             }
             return res.status(404).json({
@@ -137,7 +141,9 @@ class ComplianceController {
                 if (item._id.equals(complianceId)) {
                     const compliance = await complianceService_1.default.show(complianceId);
                     if (!compliance)
-                        return res.status(404).json({ errors: ['Compliance Not Found or Removed'] });
+                        return res
+                            .status(404)
+                            .json({ errors: ['Compliance Not Found or Removed'] });
                     const removeIndex = client.compliances.findIndex((item) => item._id.equals(complianceId));
                     if (removeIndex !== -1) {
                         client.compliances.splice(removeIndex, 1);

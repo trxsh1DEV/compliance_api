@@ -65,17 +65,27 @@ class ClientsController {
       });
     }
   }
+
   async update(req: any, res: Response) {
     const { name, social_reason, email, password, avatar, isAdmin } = req.body;
     const { id } = req.params;
+
     if (!isValidObjectId(id))
       return res.status(400).json({ errors: 'ID inválido' });
 
-    if (!name && !email && !password && !avatar && !social_reason) {
+    if (
+      !name &&
+      !email &&
+      !password &&
+      !avatar &&
+      !social_reason &&
+      typeof isAdmin !== 'boolean'
+    ) {
       return res.status(400).json({
         errors: 'Submit at least one for update',
       });
     }
+
     try {
       const clientData = {
         id,
@@ -87,9 +97,15 @@ class ClientsController {
         isAdmin,
       };
 
-      await clientService.update(clientData);
+      const updatedClient = await clientService.update(clientData);
+      if (!updatedClient) {
+        return res.status(404).json({
+          errors: 'Cliente não encontrado',
+        });
+      }
 
-      res.status(200).json({ message: 'Client updated successfully' });
+      // res.status(200).json({ message: `Client updated successfully` });
+      res.status(200).json(updatedClient);
     } catch (err: any) {
       return res.status(500).json({
         errors: [err.message],
@@ -111,7 +127,7 @@ class ClientsController {
           errors: 'Client not found',
         });
 
-      return res.status(200).json({message: 'Client removed successfully'});
+      return res.status(200).json({ message: 'Client removed successfully' });
     } catch (err: any) {
       return res.status(400).json({
         errors: [err.message],

@@ -68,7 +68,12 @@ class ClientsController {
         const { id } = req.params;
         if (!(0, mongoose_1.isValidObjectId)(id))
             return res.status(400).json({ errors: 'ID inválido' });
-        if (!name && !email && !password && !avatar && !social_reason) {
+        if (!name &&
+            !email &&
+            !password &&
+            !avatar &&
+            !social_reason &&
+            typeof isAdmin !== 'boolean') {
             return res.status(400).json({
                 errors: 'Submit at least one for update',
             });
@@ -83,8 +88,14 @@ class ClientsController {
                 avatar,
                 isAdmin,
             };
-            await clientService_1.default.update(clientData);
-            res.status(200).json({ message: 'Client updated successfully' });
+            const updatedClient = await clientService_1.default.update(clientData);
+            if (!updatedClient) {
+                return res.status(404).json({
+                    errors: 'Cliente não encontrado',
+                });
+            }
+            // res.status(200).json({ message: `Client updated successfully` });
+            res.status(200).json(updatedClient);
         }
         catch (err) {
             return res.status(500).json({

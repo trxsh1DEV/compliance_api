@@ -10,7 +10,7 @@ const router = (0, express_1.Router)();
 router.post('/', loginAndAdmin_1.default, Compliance_1.default.store);
 router.get('/latest/', Compliance_1.default.latestCompliance);
 router.get('/calculate/:id', Compliance_1.default.complianceCalculate);
-router.get('/:id', loginAndAdmin_1.default, Compliance_1.default.show);
+router.get('/:complianceId', loginAndAdmin_1.default, Compliance_1.default.show);
 router.patch('/:id', loginAndAdmin_1.default, Compliance_1.default.update);
 router.delete('/:id', loginAndAdmin_1.default, Compliance_1.default.delete);
 exports.default = router;
