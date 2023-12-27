@@ -74,8 +74,6 @@ class ComplianceController {
       if (!latestCompliance) {
         return res.status(404).json({ errors: 'Compliance Not Found' });
       }
-      console.log(latestCompliance);
-
       return res.status(200).json(latestCompliance);
     } catch (err: any) {
       return res.status(500).json({ errors: err.message });

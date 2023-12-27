@@ -1,6 +1,11 @@
 import { model, Schema, Model, SchemaDefinition } from 'mongoose';
 import { ICompliance } from '../types/ModelTypesCompliance';
 
+// enum WeightValue {
+//   MIN = 1,
+//   MAX = 10
+// }
+
 class Compliance {
   public ComplianceSchema: Schema<ICompliance>;
   public ComplianceModel: Model<ICompliance>;
@@ -21,15 +26,15 @@ class Compliance {
             local: this.createStorageSchema(),
             remote: this.createStorageSchema(),
           },
-          description: { type: String, required: true },
-          points: this.pointingTemplate(),
+          weight: this.weightTemplate(9),
+          ...this.templateObjectFather(),
         },
         server: this.createServersSchema(),
         ha: this.createHASchema(),
         firewall: this.createFirewall(),
         inventory: this.createInventory(),
         security: this.createSecurity(),
-        servicesOutsourcing: this.createServicesOutsourcing(),
+        servicesOutsourcing: this.createServices(),
         totalScore: this.pointingTemplate(),
       },
       { timestamps: true },
@@ -52,7 +57,6 @@ class Compliance {
 
   createFrequencySchema(): SchemaDefinition {
     return {
-      enabled: this.isEnable(),
       level: { type: String, enum: ['low', 'medium', 'high'] },
       score: this.scoreTemplate(),
       weight: this.weightTemplate(8),
@@ -86,14 +90,12 @@ class Compliance {
           systemOperation: this.createSystemOperationSchema(),
           config: this.createConfigServerSchema(),
           monitoringPerformance: this.createMonitoringServer(),
-          score: this.scoreTemplate(),
           weight: this.weightTemplate(8),
-          description: { type: String },
-          points: this.pointingTemplate(),
+          ...this.templateDefault(),
         },
       ],
-      description: { type: String, required: true },
-      points: this.pointingTemplate(),
+      weight: this.weightTemplate(8),
+      ...this.templateObjectFather(),
     };
   }
 
@@ -143,10 +145,8 @@ class Compliance {
             'O tempo deve ser um numero que será convertido em horas e não deve ser um numero negativo',
         },
       },
-      score: this.scoreTemplate(),
-      description: { type: String },
       weight: this.weightTemplate(7),
-      points: this.pointingTemplate(),
+      ...this.templateDefault(),
     };
   }
 
@@ -157,7 +157,7 @@ class Compliance {
     return {
       enabled: this.isEnable(),
       manufacturer: {
-        type: String,
+        type: [String],
         enum: [
           'Sophos',
           'Fortigate',
@@ -174,6 +174,8 @@ class Compliance {
       backup: this.booleanDefault(),
       restoration: this.booleanDefault(),
       monitoring: this.booleanDefault(),
+      weight: this.weightTemplate(9),
+      ...this.templateDefault(),
     };
   }
 
@@ -182,7 +184,7 @@ class Compliance {
     return {
       enabled: this.isEnable(),
       devices: {
-        type: String,
+        type: [String],
         enum: [
           'Computadores',
           'Notebooks',
@@ -197,6 +199,8 @@ class Compliance {
         enum: ['None', 'Few', 'Medium', 'Many', 'All'],
         default: 'None',
       },
+      weight: this.weightTemplate(7),
+      ...this.templateDefault(),
     };
   }
 
@@ -215,10 +219,12 @@ class Compliance {
         default: 'None',
       },
       lgpd: this.booleanDefault(),
+      weight: this.weightTemplate(8),
+      ...this.templateDefault(),
     };
   }
 
-  createServicesOutsourcing() {
+  createServices() {
     return {
       email: this.booleanDefault(),
       fileserver: this.booleanDefault(),
@@ -227,6 +233,8 @@ class Compliance {
       erp: this.booleanDefault(),
       database: this.booleanDefault(),
       servers: this.booleanDefault(),
+      weight: this.weightTemplate(6),
+      ...this.templateDefault(),
     };
   }
 
@@ -239,9 +247,11 @@ class Compliance {
     };
   }
   weightTemplate(numb: number) {
+    const sanitizedNumber = Math.max(1, Math.min(10, numb));
+
     return {
       type: Number,
-      default: numb,
+      default: sanitizedNumber,
     };
   }
   isEnable() {
@@ -262,6 +272,19 @@ class Compliance {
     return {
       type: Number,
       default: 0,
+    };
+  }
+  templateDefault() {
+    return {
+      score: this.scoreTemplate(),
+      description: { type: String },
+      points: this.pointingTemplate(),
+    };
+  }
+  templateObjectFather() {
+    return {
+      description: { type: String, required: true },
+      points: this.pointingTemplate(),
     };
   }
 }

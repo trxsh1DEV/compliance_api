@@ -3,15 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.calculatePointing = void 0;
 const saveDataInfra_1 = require("../data/saveDataInfra");
 const calculatePointing = async (infra, complianceId) => {
-    const infraArray = [infra];
+    const serverArray = [infra.server];
     let bkp = { scores: 0, weights: 0 };
     let servers = [];
     let ha = { scores: 0, weights: 0 };
-    infraArray.forEach((items) => {
-        ha = haCalc(items.ha);
-        bkp = backupCalc(items.backup);
-        servers = ServersCalc(items.server) || [];
+    let firewall = { scores: 0, weights: 0 };
+    serverArray.forEach((items) => {
+        servers = ServersCalc(items);
     });
+    ha = haCalc(infra.ha);
+    bkp = backupCalc(infra.backup);
+    firewall = backupFirewall(infra.firewall);
     const averageHa = calculatePercentage(ha.scores, ha.weights);
     const averageBkp = calculatePercentage(bkp.scores, bkp.weights);
     const averageServer = servers.map((item) => {
@@ -20,16 +22,20 @@ const calculatePointing = async (infra, complianceId) => {
             pointing: calculatePercentage(item.scores, item.weights),
         };
     });
+    const averageFirewall = calculatePercentage(firewall.scores, firewall.weights);
     const serverTotalScores = servers.reduce((ac, current) => ac + current.scores, 0);
     const serverTotalWeights = servers.reduce((ac, current) => ac + current.weights, 0);
     const averageAllServers = calculatePercentage(serverTotalScores, serverTotalWeights);
     const totalScores = servers.reduce((ac, currentValue) => ac + currentValue.scores, 0) +
         bkp.scores +
-        ha.scores;
+        ha.scores +
+        firewall.scores;
     const totalWeights = servers.reduce((total, item) => total + item.weights, 0) +
         bkp.weights +
-        ha.weights;
-    if (!averageBkp && !averageHa && !averageServer)
+        ha.weights +
+        firewall.weights;
+    console.log(averageBkp, averageHa, averageServer, averageFirewall);
+    if (!averageBkp && !averageHa && !averageServer && !averageFirewall)
         return;
     const totalScore = parseFloat(calculatePercentage(totalScores, totalWeights));
     const averages = {
@@ -37,22 +43,12 @@ const calculatePointing = async (infra, complianceId) => {
         averageHa,
         averageServer,
         averageAllServers,
+        averageFirewall,
         totalScore,
     };
     try {
         const data = await (0, saveDataInfra_1.postDataInfra)(averages, infra, complianceId);
-        // await Compliance.findByIdAndUpdate(
-        //   complianceId,
-        //   {
-        //     $set: {
-        //       'backup.points': averageBkp,
-        //       'server.servers.points': serversScore, //Não funciona, pois n tem como aplicar uma logica de for para percorrer os indices
-        //       'server.points': averageAllServers,
-        //       'ha.points': averageHa,
-        //     },
-        //   },
-        //   { new: true },
-        // );
+        // console.log(data);
         return data;
     }
     catch (err) {
@@ -73,11 +69,11 @@ const backupCalc = (itemsBackup) => {
     // return calculatePercentage(totalPoints, maxPoints);
     return { scores: totalPoints, weights: maxPoints };
 };
+// IServers
 const ServersCalc = (itemsServer) => {
     const { enabled } = itemsServer;
     if (!enabled)
-        return;
-    // let pointsAllServers: PointsServer[] = [];
+        return null;
     let pointsAllServers = [];
     for (const obj of itemsServer.servers) {
         let pointGeneral = obj.score * obj.weight;
@@ -96,9 +92,14 @@ const ServersCalc = (itemsServer) => {
     return pointsAllServers;
 };
 const haCalc = (itemsHA) => {
-    let totalPoints = pointTotalCalc(itemsHA.score * itemsHA.weight);
-    let maxPoints = maxPointing(itemsHA.weight);
+    const totalPoints = pointTotalCalc(itemsHA.score * itemsHA.weight);
+    const maxPoints = maxPointing(itemsHA.weight);
     // return calculatePercentage(scores: totalPoints, maxPoints);
+    return { scores: totalPoints, weights: maxPoints };
+};
+const backupFirewall = (firewall) => {
+    const totalPoints = pointTotalCalc(firewall.score * firewall.weight);
+    const maxPoints = maxPointing(firewall.weight);
     return { scores: totalPoints, weights: maxPoints };
 };
 const pointTotalCalc = (...points) => {

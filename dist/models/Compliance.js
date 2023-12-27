@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
+// enum WeightValue {
+//   MIN = 1,
+//   MAX = 10
+// }
 class Compliance {
     constructor() {
         this.ComplianceSchema = new mongoose_1.Schema({
@@ -9,23 +13,16 @@ class Compliance {
                 ref: 'Client',
                 required: true,
             },
-            backup: {
-                frequency: this.createFrequencySchema(),
-                restoration: this.createRestorationSchema(),
-                policy: this.createPolicySchema(),
-                storage: {
+            backup: Object.assign({ frequency: this.createFrequencySchema(), restoration: this.createRestorationSchema(), policy: this.createPolicySchema(), storage: {
                     local: this.createStorageSchema(),
                     remote: this.createStorageSchema(),
-                },
-                description: { type: String, required: true },
-                points: this.pointingTemplate(),
-            },
+                }, weight: this.weightTemplate(9) }, this.templateObjectFather()),
             server: this.createServersSchema(),
             ha: this.createHASchema(),
             firewall: this.createFirewall(),
             inventory: this.createInventory(),
             security: this.createSecurity(),
-            servicesOutsourcing: this.createServicesOutsourcing(),
+            servicesOutsourcing: this.createServices(),
             totalScore: this.pointingTemplate(),
         }, { timestamps: true });
         this.ComplianceModel = (0, mongoose_1.model)('Compliance', this.ComplianceSchema);
@@ -40,7 +37,6 @@ class Compliance {
     }
     createFrequencySchema() {
         return {
-            enabled: this.isEnable(),
             level: { type: String, enum: ['low', 'medium', 'high'] },
             score: this.scoreTemplate(),
             weight: this.weightTemplate(8),
@@ -63,23 +59,9 @@ class Compliance {
     }
     // Servers
     createServersSchema() {
-        return {
-            enabled: this.isEnable(),
-            servers: [
-                {
-                    serverName: { type: String },
-                    systemOperation: this.createSystemOperationSchema(),
-                    config: this.createConfigServerSchema(),
-                    monitoringPerformance: this.createMonitoringServer(),
-                    score: this.scoreTemplate(),
-                    weight: this.weightTemplate(8),
-                    description: { type: String },
-                    points: this.pointingTemplate(),
-                },
-            ],
-            description: { type: String, required: true },
-            points: this.pointingTemplate(),
-        };
+        return Object.assign({ enabled: this.isEnable(), servers: [
+                Object.assign({ serverName: { type: String }, systemOperation: this.createSystemOperationSchema(), config: this.createConfigServerSchema(), monitoringPerformance: this.createMonitoringServer(), weight: this.weightTemplate(8) }, this.templateDefault()),
+            ], weight: this.weightTemplate(8) }, this.templateObjectFather());
     }
     createConfigServerSchema() {
         return {
@@ -108,34 +90,23 @@ class Compliance {
     // Servers
     // HA
     createHASchema() {
-        return {
-            enabled: this.isEnable(),
-            solutions: {
+        return Object.assign({ enabled: this.isEnable(), solutions: {
                 type: [String],
                 enum: ['redundancy', 'load balance', 'failover', 'cluster', 'none'],
                 default: ['none'],
-            },
-            tested: this.isEnable(),
-            rto: {
+            }, tested: this.isEnable(), rto: {
                 type: Number,
                 validate: {
                     validator: (value) => value >= 0,
                     message: 'O tempo deve ser um numero que será convertido em horas e não deve ser um numero negativo',
                 },
-            },
-            score: this.scoreTemplate(),
-            description: { type: String },
-            weight: this.weightTemplate(7),
-            points: this.pointingTemplate(),
-        };
+            }, weight: this.weightTemplate(7) }, this.templateDefault());
     }
     // HA
     // Firewall
     createFirewall() {
-        return {
-            enabled: this.isEnable(),
-            manufacturer: {
-                type: String,
+        return Object.assign({ enabled: this.isEnable(), manufacturer: {
+                type: [String],
                 enum: [
                     'Sophos',
                     'Fortigate',
@@ -144,22 +115,12 @@ class Compliance {
                     'SonicWall',
                     'PFsense',
                 ],
-            },
-            rules: { type: String, enum: ['weak', 'medium', 'good'] },
-            segmentation: this.booleanDefault(),
-            vpn: { type: String, enum: ['weak', 'medium', 'good'] },
-            ips: this.booleanDefault(),
-            backup: this.booleanDefault(),
-            restoration: this.booleanDefault(),
-            monitoring: this.booleanDefault(),
-        };
+            }, rules: { type: String, enum: ['weak', 'medium', 'good'] }, segmentation: this.booleanDefault(), vpn: { type: String, enum: ['weak', 'medium', 'good'] }, ips: this.booleanDefault(), backup: this.booleanDefault(), restoration: this.booleanDefault(), monitoring: this.booleanDefault(), weight: this.weightTemplate(9) }, this.templateDefault());
     }
     // Inventory
     createInventory() {
-        return {
-            enabled: this.isEnable(),
-            devices: {
-                type: String,
+        return Object.assign({ enabled: this.isEnable(), devices: {
+                type: [String],
                 enum: [
                     'Computadores',
                     'Notebooks',
@@ -167,42 +128,25 @@ class Compliance {
                     'Impressoras',
                     'Equipamentos',
                 ],
-            },
-            contacts: { type: Boolean, required: true },
-            agentInventory: {
+            }, contacts: { type: Boolean, required: true }, agentInventory: {
                 type: String,
                 enum: ['None', 'Few', 'Medium', 'Many', 'All'],
                 default: 'None',
-            },
-        };
+            }, weight: this.weightTemplate(7) }, this.templateDefault());
     }
     createSecurity() {
-        return {
-            antivirus: {
+        return Object.assign({ antivirus: {
                 type: String,
                 enum: ['None', 'Few', 'Medium', 'Many', 'All'],
                 default: 'None',
-            },
-            policyPassword: this.booleanDefault(),
-            accessAuditing: this.booleanDefault(),
-            gpo: {
+            }, policyPassword: this.booleanDefault(), accessAuditing: this.booleanDefault(), gpo: {
                 type: String,
                 enum: ['None', 'Basic', 'Advanced'],
                 default: 'None',
-            },
-            lgpd: this.booleanDefault(),
-        };
+            }, lgpd: this.booleanDefault(), weight: this.weightTemplate(8) }, this.templateDefault());
     }
-    createServicesOutsourcing() {
-        return {
-            email: this.booleanDefault(),
-            fileserver: this.booleanDefault(),
-            intranet: this.booleanDefault(),
-            sites: this.booleanDefault(),
-            erp: this.booleanDefault(),
-            database: this.booleanDefault(),
-            servers: this.booleanDefault(),
-        };
+    createServices() {
+        return Object.assign({ email: this.booleanDefault(), fileserver: this.booleanDefault(), intranet: this.booleanDefault(), sites: this.booleanDefault(), erp: this.booleanDefault(), database: this.booleanDefault(), servers: this.booleanDefault(), weight: this.weightTemplate(6) }, this.templateDefault());
     }
     // Templates
     scoreTemplate() {
@@ -213,9 +157,10 @@ class Compliance {
         };
     }
     weightTemplate(numb) {
+        const sanitizedNumber = Math.max(1, Math.min(10, numb));
         return {
             type: Number,
-            default: numb,
+            default: sanitizedNumber,
         };
     }
     isEnable() {
@@ -236,6 +181,19 @@ class Compliance {
         return {
             type: Number,
             default: 0,
+        };
+    }
+    templateDefault() {
+        return {
+            score: this.scoreTemplate(),
+            description: { type: String },
+            points: this.pointingTemplate(),
+        };
+    }
+    templateObjectFather() {
+        return {
+            description: { type: String, required: true },
+            points: this.pointingTemplate(),
         };
     }
 }

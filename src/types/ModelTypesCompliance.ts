@@ -106,6 +106,9 @@ export interface IFirewall {
   backup: boolean;
   restorarion: boolean;
   monitoring: boolean;
+  score: number;
+  weight: number;
+  points: number;
 }
 
 export interface IInventory {

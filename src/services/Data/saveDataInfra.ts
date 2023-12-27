@@ -10,25 +10,29 @@ export type averageInfraType = {
     },
   ];
   averageAllServers: number;
+  averageFirewall: number;
   totalScore: number;
 };
 
 export const postDataInfra = async (
-  infra: averageInfraType,
-  compliance: ICompliance,
+  average: averageInfraType,
+  infra: ICompliance,
   id: string,
 ) => {
-  if (!compliance) return;
+  if (!infra) return;
 
-  compliance.backup.points = infra.averageBkp;
-  compliance.ha.points = infra.averageHa;
-  compliance.server.points = infra.averageAllServers;
-  compliance.totalScore = infra.totalScore;
-  compliance.server.servers.map((item, index) => {
-    const scoreNumber = parseFloat(infra.averageServer[index].pointing);
+  infra.backup.points = average.averageBkp;
+  infra.ha.points = average.averageHa;
+  infra.server.points = average.averageAllServers;
+  infra.server.servers.map((item, index) => {
+    const scoreNumber = parseFloat(average.averageServer[index].pointing);
     if (!isNaN(scoreNumber) && scoreNumber) item.points = scoreNumber;
   });
+  infra.totalScore = average.totalScore;
+  infra.firewall.points = average.averageFirewall;
 
-  await compliance.save({ validateModifiedOnly: true });
-  return compliance;
+  console.log(average);
+  console.log('----------------------------------------');
+  await infra.save({ validateModifiedOnly: true });
+  return infra;
 };
