@@ -146,7 +146,7 @@ class Compliance {
         },
       },
       weight: this.weightTemplate(7),
-      ...this.templateDefault(),
+      ...this.templateDefault(true),
     };
   }
 
@@ -175,7 +175,7 @@ class Compliance {
       restoration: this.booleanDefault(),
       monitoring: this.booleanDefault(),
       weight: this.weightTemplate(9),
-      ...this.templateDefault(),
+      ...this.templateDefault(true),
     };
   }
 
@@ -200,7 +200,7 @@ class Compliance {
         default: 'None',
       },
       weight: this.weightTemplate(7),
-      ...this.templateDefault(),
+      ...this.templateDefault(true),
     };
   }
 
@@ -220,7 +220,7 @@ class Compliance {
       },
       lgpd: this.booleanDefault(),
       weight: this.weightTemplate(8),
-      ...this.templateDefault(),
+      ...this.templateDefault(true),
     };
   }
 
@@ -234,7 +234,7 @@ class Compliance {
       database: this.booleanDefault(),
       servers: this.booleanDefault(),
       weight: this.weightTemplate(6),
-      ...this.templateDefault(),
+      ...this.templateDefault(true),
     };
   }
 
@@ -243,15 +243,14 @@ class Compliance {
     return {
       type: Number,
       enum: [...Array(11).keys()],
+      required: true,
       default: 0,
     };
   }
   weightTemplate(numb: number) {
-    const sanitizedNumber = Math.max(1, Math.min(10, numb));
-
     return {
       type: Number,
-      default: sanitizedNumber,
+      default: Math.max(1, Math.min(10, numb)),
     };
   }
   isEnable() {
@@ -274,10 +273,10 @@ class Compliance {
       default: 0,
     };
   }
-  templateDefault() {
+  templateDefault(description: boolean = false) {
     return {
       score: this.scoreTemplate(),
-      description: { type: String },
+      description: { type: String, required: description },
       points: this.pointingTemplate(),
     };
   }

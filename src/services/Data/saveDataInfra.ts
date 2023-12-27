@@ -11,6 +11,9 @@ export type averageInfraType = {
   ];
   averageAllServers: number;
   averageFirewall: number;
+  averageInventory: number;
+  averageSecurity: number;
+  averageServices: number;
   totalScore: number;
 };
 
@@ -28,8 +31,11 @@ export const postDataInfra = async (
     const scoreNumber = parseFloat(average.averageServer[index].pointing);
     if (!isNaN(scoreNumber) && scoreNumber) item.points = scoreNumber;
   });
-  infra.totalScore = average.totalScore;
   infra.firewall.points = average.averageFirewall;
+  infra.inventory.points = average.averageInventory;
+  infra.security.points = average.averageSecurity;
+  infra.servicesOutsourcing.points = average.averageServices;
+  infra.totalScore = average.totalScore;
 
   console.log(average);
   console.log('----------------------------------------');

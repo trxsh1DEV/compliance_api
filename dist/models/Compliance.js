@@ -100,7 +100,7 @@ class Compliance {
                     validator: (value) => value >= 0,
                     message: 'O tempo deve ser um numero que será convertido em horas e não deve ser um numero negativo',
                 },
-            }, weight: this.weightTemplate(7) }, this.templateDefault());
+            }, weight: this.weightTemplate(7) }, this.templateDefault(true));
     }
     // HA
     // Firewall
@@ -115,7 +115,7 @@ class Compliance {
                     'SonicWall',
                     'PFsense',
                 ],
-            }, rules: { type: String, enum: ['weak', 'medium', 'good'] }, segmentation: this.booleanDefault(), vpn: { type: String, enum: ['weak', 'medium', 'good'] }, ips: this.booleanDefault(), backup: this.booleanDefault(), restoration: this.booleanDefault(), monitoring: this.booleanDefault(), weight: this.weightTemplate(9) }, this.templateDefault());
+            }, rules: { type: String, enum: ['weak', 'medium', 'good'] }, segmentation: this.booleanDefault(), vpn: { type: String, enum: ['weak', 'medium', 'good'] }, ips: this.booleanDefault(), backup: this.booleanDefault(), restoration: this.booleanDefault(), monitoring: this.booleanDefault(), weight: this.weightTemplate(9) }, this.templateDefault(true));
     }
     // Inventory
     createInventory() {
@@ -132,7 +132,7 @@ class Compliance {
                 type: String,
                 enum: ['None', 'Few', 'Medium', 'Many', 'All'],
                 default: 'None',
-            }, weight: this.weightTemplate(7) }, this.templateDefault());
+            }, weight: this.weightTemplate(7) }, this.templateDefault(true));
     }
     createSecurity() {
         return Object.assign({ antivirus: {
@@ -143,24 +143,24 @@ class Compliance {
                 type: String,
                 enum: ['None', 'Basic', 'Advanced'],
                 default: 'None',
-            }, lgpd: this.booleanDefault(), weight: this.weightTemplate(8) }, this.templateDefault());
+            }, lgpd: this.booleanDefault(), weight: this.weightTemplate(8) }, this.templateDefault(true));
     }
     createServices() {
-        return Object.assign({ email: this.booleanDefault(), fileserver: this.booleanDefault(), intranet: this.booleanDefault(), sites: this.booleanDefault(), erp: this.booleanDefault(), database: this.booleanDefault(), servers: this.booleanDefault(), weight: this.weightTemplate(6) }, this.templateDefault());
+        return Object.assign({ email: this.booleanDefault(), fileserver: this.booleanDefault(), intranet: this.booleanDefault(), sites: this.booleanDefault(), erp: this.booleanDefault(), database: this.booleanDefault(), servers: this.booleanDefault(), weight: this.weightTemplate(6) }, this.templateDefault(true));
     }
     // Templates
     scoreTemplate() {
         return {
             type: Number,
             enum: [...Array(11).keys()],
+            required: true,
             default: 0,
         };
     }
     weightTemplate(numb) {
-        const sanitizedNumber = Math.max(1, Math.min(10, numb));
         return {
             type: Number,
-            default: sanitizedNumber,
+            default: Math.max(1, Math.min(10, numb)),
         };
     }
     isEnable() {
@@ -183,10 +183,10 @@ class Compliance {
             default: 0,
         };
     }
-    templateDefault() {
+    templateDefault(description = false) {
         return {
             score: this.scoreTemplate(),
-            description: { type: String },
+            description: { type: String, required: description },
             points: this.pointingTemplate(),
         };
     }

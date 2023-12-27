@@ -8,12 +8,18 @@ const calculatePointing = async (infra, complianceId) => {
     let servers = [];
     let ha = { scores: 0, weights: 0 };
     let firewall = { scores: 0, weights: 0 };
+    let inventory = { scores: 0, weights: 0 };
+    let security = { scores: 0, weights: 0 };
+    let services = { scores: 0, weights: 0 };
     serverArray.forEach((items) => {
         servers = ServersCalc(items);
     });
-    ha = haCalc(infra.ha);
+    ha = defaultCalc(infra.ha);
     bkp = backupCalc(infra.backup);
-    firewall = backupFirewall(infra.firewall);
+    firewall = defaultCalc(infra.firewall);
+    inventory = defaultCalc(infra.inventory);
+    security = defaultCalc(infra.security);
+    services = defaultCalc(infra.servicesOutsourcing);
     const averageHa = calculatePercentage(ha.scores, ha.weights);
     const averageBkp = calculatePercentage(bkp.scores, bkp.weights);
     const averageServer = servers.map((item) => {
@@ -23,19 +29,40 @@ const calculatePointing = async (infra, complianceId) => {
         };
     });
     const averageFirewall = calculatePercentage(firewall.scores, firewall.weights);
+    const averageInventory = calculatePercentage(inventory.scores, inventory.weights);
+    const averageSecurity = calculatePercentage(security.scores, security.weights);
+    const averageServices = calculatePercentage(services.scores, services.weights);
     const serverTotalScores = servers.reduce((ac, current) => ac + current.scores, 0);
     const serverTotalWeights = servers.reduce((ac, current) => ac + current.weights, 0);
     const averageAllServers = calculatePercentage(serverTotalScores, serverTotalWeights);
     const totalScores = servers.reduce((ac, currentValue) => ac + currentValue.scores, 0) +
         bkp.scores +
         ha.scores +
-        firewall.scores;
+        firewall.scores +
+        inventory.scores +
+        security.scores +
+        services.scores;
     const totalWeights = servers.reduce((total, item) => total + item.weights, 0) +
         bkp.weights +
         ha.weights +
-        firewall.weights;
-    console.log(averageBkp, averageHa, averageServer, averageFirewall);
-    if (!averageBkp && !averageHa && !averageServer && !averageFirewall)
+        firewall.weights +
+        inventory.weights +
+        security.weights +
+        services.weights;
+    // console.log(
+    //   averageBkp,
+    //   averageHa,
+    //   averageServer,
+    //   averageFirewall,
+    //   averageInventory,
+    // );
+    if (!averageBkp &&
+        !averageHa &&
+        !averageServer &&
+        !averageFirewall &&
+        !averageInventory &&
+        !averageSecurity &&
+        !averageServices)
         return;
     const totalScore = parseFloat(calculatePercentage(totalScores, totalWeights));
     const averages = {
@@ -44,6 +71,9 @@ const calculatePointing = async (infra, complianceId) => {
         averageServer,
         averageAllServers,
         averageFirewall,
+        averageInventory,
+        averageSecurity,
+        averageServices,
         totalScore,
     };
     try {
@@ -91,15 +121,9 @@ const ServersCalc = (itemsServer) => {
     }
     return pointsAllServers;
 };
-const haCalc = (itemsHA) => {
-    const totalPoints = pointTotalCalc(itemsHA.score * itemsHA.weight);
-    const maxPoints = maxPointing(itemsHA.weight);
-    // return calculatePercentage(scores: totalPoints, maxPoints);
-    return { scores: totalPoints, weights: maxPoints };
-};
-const backupFirewall = (firewall) => {
-    const totalPoints = pointTotalCalc(firewall.score * firewall.weight);
-    const maxPoints = maxPointing(firewall.weight);
+const defaultCalc = (infraObj) => {
+    const totalPoints = pointTotalCalc(infraObj.score * infraObj.weight);
+    const maxPoints = maxPointing(infraObj.weight);
     return { scores: totalPoints, weights: maxPoints };
 };
 const pointTotalCalc = (...points) => {

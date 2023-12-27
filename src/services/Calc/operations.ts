@@ -1,8 +1,6 @@
 import {
   IBackupItems,
   ICompliance,
-  IFirewall,
-  IHA,
   IServers,
 } from '../../types/ModelTypesCompliance';
 import { GenericType } from '../../types/TypesVariableCompliance';
@@ -18,17 +16,19 @@ interface TypeAllServers {
   weights: number;
 }
 
-export type averageInfraType = {
+type averageInfraType = {
   averageBkp: number | string;
   averageHa: number | string;
-  averageServer: [
-    {
-      name: string;
-      pointing: string;
-    },
-  ];
+  averageServer: {
+    name: string;
+    pointing: string | number;
+  }[];
   averageAllServers: number | string;
-  totalScore: number | string;
+  averageFirewall: number | string;
+  averageInventory: number | string;
+  averageSecurity: number | string;
+  averageServices: number | string;
+  totalScore: number;
 };
 
 export const calculatePointing = async (
@@ -40,13 +40,19 @@ export const calculatePointing = async (
   let servers: GenericInfraServerType[] | null = [];
   let ha: GenericType = { scores: 0, weights: 0 };
   let firewall: GenericType = { scores: 0, weights: 0 };
+  let inventory: GenericType = { scores: 0, weights: 0 };
+  let security: GenericType = { scores: 0, weights: 0 };
+  let services: GenericType = { scores: 0, weights: 0 };
 
   serverArray.forEach((items) => {
     servers = ServersCalc(items);
   });
-  ha = haCalc(infra.ha);
+  ha = defaultCalc(infra.ha);
   bkp = backupCalc(infra.backup);
-  firewall = backupFirewall(infra.firewall);
+  firewall = defaultCalc(infra.firewall);
+  inventory = defaultCalc(infra.inventory);
+  security = defaultCalc(infra.security);
+  services = defaultCalc(infra.servicesOutsourcing);
 
   const averageHa = calculatePercentage(ha.scores, ha.weights);
   const averageBkp = calculatePercentage(bkp.scores, bkp.weights);
@@ -59,6 +65,18 @@ export const calculatePointing = async (
   const averageFirewall = calculatePercentage(
     firewall.scores,
     firewall.weights,
+  );
+  const averageInventory = calculatePercentage(
+    inventory.scores,
+    inventory.weights,
+  );
+  const averageSecurity = calculatePercentage(
+    security.scores,
+    security.weights,
+  );
+  const averageServices = calculatePercentage(
+    services.scores,
+    services.weights,
   );
 
   const serverTotalScores = servers.reduce(
@@ -78,24 +96,48 @@ export const calculatePointing = async (
     servers.reduce((ac, currentValue) => ac + currentValue.scores, 0) +
     bkp.scores +
     ha.scores +
-    firewall.scores;
+    firewall.scores +
+    inventory.scores +
+    security.scores +
+    services.scores;
 
   const totalWeights =
     servers.reduce((total, item) => total + item.weights, 0) +
     bkp.weights +
     ha.weights +
-    firewall.weights;
+    firewall.weights +
+    inventory.weights +
+    security.weights +
+    services.weights;
 
-  console.log(averageBkp, averageHa, averageServer, averageFirewall);
-  if (!averageBkp && !averageHa && !averageServer && !averageFirewall) return;
+  // console.log(
+  //   averageBkp,
+  //   averageHa,
+  //   averageServer,
+  //   averageFirewall,
+  //   averageInventory,
+  // );
+  if (
+    !averageBkp &&
+    !averageHa &&
+    !averageServer &&
+    !averageFirewall &&
+    !averageInventory &&
+    !averageSecurity &&
+    !averageServices
+  )
+    return;
   const totalScore = parseFloat(calculatePercentage(totalScores, totalWeights));
 
-  const averages: any = {
+  const averages: averageInfraType | any = {
     averageBkp,
     averageHa,
     averageServer,
     averageAllServers,
     averageFirewall,
+    averageInventory,
+    averageSecurity,
+    averageServices,
     totalScore,
   };
 
@@ -173,17 +215,9 @@ const ServersCalc = (itemsServer: IServers): TypeAllServers[] | null => {
   return pointsAllServers;
 };
 
-const haCalc = (itemsHA: IHA) => {
-  const totalPoints = pointTotalCalc(itemsHA.score * itemsHA.weight);
-  const maxPoints = maxPointing(itemsHA.weight);
-
-  // return calculatePercentage(scores: totalPoints, maxPoints);
-  return { scores: totalPoints, weights: maxPoints };
-};
-
-const backupFirewall = (firewall: IFirewall) => {
-  const totalPoints = pointTotalCalc(firewall.score * firewall.weight);
-  const maxPoints = maxPointing(firewall.weight);
+const defaultCalc = (infraObj: any) => {
+  const totalPoints = pointTotalCalc(infraObj.score * infraObj.weight);
+  const maxPoints = maxPointing(infraObj.weight);
 
   return { scores: totalPoints, weights: maxPoints };
 };

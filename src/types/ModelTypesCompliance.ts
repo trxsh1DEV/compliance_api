@@ -122,6 +122,9 @@ export interface IInventory {
   )[];
   contacts: boolean;
   agentInventory: ['None', 'Few', 'Medium', 'Many', 'All'];
+  score: number;
+  weight: number;
+  points: number;
 }
 
 export interface ISecurity {
@@ -130,6 +133,9 @@ export interface ISecurity {
   accessAuditing: boolean;
   gpo: ['None', 'Basic', 'Advanced'];
   lgpd: boolean;
+  score: number;
+  weight: number;
+  points: number;
 }
 
 export interface IServices {
@@ -140,6 +146,9 @@ export interface IServices {
   erp: boolean;
   database: boolean;
   servers: boolean;
+  score: number;
+  weight: number;
+  points: number;
 }
 
 export interface ICompliance extends Document {

@@ -12,8 +12,11 @@ const postDataInfra = async (average, infra, id) => {
         if (!isNaN(scoreNumber) && scoreNumber)
             item.points = scoreNumber;
     });
-    infra.totalScore = average.totalScore;
     infra.firewall.points = average.averageFirewall;
+    infra.inventory.points = average.averageInventory;
+    infra.security.points = average.averageSecurity;
+    infra.servicesOutsourcing.points = average.averageServices;
+    infra.totalScore = average.totalScore;
     console.log(average);
     console.log('----------------------------------------');
     await infra.save({ validateModifiedOnly: true });
