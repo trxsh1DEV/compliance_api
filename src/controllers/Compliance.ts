@@ -83,15 +83,12 @@ class ComplianceController {
   }
 
   async store(req: Request, res: Response) {
-    console.log(req.body.clientId);
     try {
       const client = await clientService.show(req.body.data.client);
 
       if (!client) {
         return res.status(404).json({ errors: ['Client not found'] });
       }
-
-      // Crie novas Compliances com base nos dados da solicitação
       const compliances = await complianceService.store(req.body.data);
 
       // Certifique-se de que `compliances` é uma array

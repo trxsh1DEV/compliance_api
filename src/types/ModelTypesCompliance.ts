@@ -89,10 +89,64 @@ export interface IHA {
   points: number;
 }
 
+export interface IFirewall {
+  enabled: boolean;
+  manufacturer: [
+    'Sophos',
+    'Fortigate',
+    'Mikrotik',
+    'Cisco',
+    'SonicWall',
+    'PFsense',
+  ];
+  rules: ['weak', 'medium', 'good'];
+  segmentation: boolean;
+  vpn: ['weak', 'medium', 'good'];
+  ips: boolean;
+  backup: boolean;
+  restorarion: boolean;
+  monitoring: boolean;
+}
+
+export interface IInventory {
+  enabled: boolean;
+  devices: (
+    | 'Computadores'
+    | 'Notebooks'
+    | 'Servidores'
+    | 'Impressoras'
+    | 'Equipamentos'
+  )[];
+  contacts: boolean;
+  agentInventory: ['None', 'Few', 'Medium', 'Many', 'All'];
+}
+
+export interface ISecurity {
+  antivirus: ['None', 'Few', 'Medium', 'Many', 'All'];
+  policyPassword: boolean;
+  accessAuditing: boolean;
+  gpo: ['None', 'Basic', 'Advanced'];
+  lgpd: boolean;
+}
+
+export interface IServices {
+  email: boolean;
+  fileserver: boolean;
+  intranet: boolean;
+  sites: boolean;
+  erp: boolean;
+  database: boolean;
+  servers: boolean;
+}
+
 export interface ICompliance extends Document {
   client: Types.ObjectId;
   backup: IBackupItems;
   server: IServers;
   ha: IHA;
+  firewall: IFirewall;
+  inventory: IInventory;
+  security: ISecurity;
+  servicesOutsourcing: IServices;
   totalScore: number;
 }

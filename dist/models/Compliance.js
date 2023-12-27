@@ -22,6 +22,10 @@ class Compliance {
             },
             server: this.createServersSchema(),
             ha: this.createHASchema(),
+            firewall: this.createFirewall(),
+            inventory: this.createInventory(),
+            security: this.createSecurity(),
+            servicesOutsourcing: this.createServicesOutsourcing(),
             totalScore: this.pointingTemplate(),
         }, { timestamps: true });
         this.ComplianceModel = (0, mongoose_1.model)('Compliance', this.ComplianceSchema);
@@ -126,6 +130,80 @@ class Compliance {
         };
     }
     // HA
+    // Firewall
+    createFirewall() {
+        return {
+            enabled: this.isEnable(),
+            manufacturer: {
+                type: String,
+                enum: [
+                    'Sophos',
+                    'Fortigate',
+                    'Mikrotik',
+                    'Cisco',
+                    'SonicWall',
+                    'PFsense',
+                ],
+            },
+            rules: { type: String, enum: ['weak', 'medium', 'good'] },
+            segmentation: this.booleanDefault(),
+            vpn: { type: String, enum: ['weak', 'medium', 'good'] },
+            ips: this.booleanDefault(),
+            backup: this.booleanDefault(),
+            restoration: this.booleanDefault(),
+            monitoring: this.booleanDefault(),
+        };
+    }
+    // Inventory
+    createInventory() {
+        return {
+            enabled: this.isEnable(),
+            devices: {
+                type: String,
+                enum: [
+                    'Computadores',
+                    'Notebooks',
+                    'Servidores',
+                    'Impressoras',
+                    'Equipamentos',
+                ],
+            },
+            contacts: { type: Boolean, required: true },
+            agentInventory: {
+                type: String,
+                enum: ['None', 'Few', 'Medium', 'Many', 'All'],
+                default: 'None',
+            },
+        };
+    }
+    createSecurity() {
+        return {
+            antivirus: {
+                type: String,
+                enum: ['None', 'Few', 'Medium', 'Many', 'All'],
+                default: 'None',
+            },
+            policyPassword: this.booleanDefault(),
+            accessAuditing: this.booleanDefault(),
+            gpo: {
+                type: String,
+                enum: ['None', 'Basic', 'Advanced'],
+                default: 'None',
+            },
+            lgpd: this.booleanDefault(),
+        };
+    }
+    createServicesOutsourcing() {
+        return {
+            email: this.booleanDefault(),
+            fileserver: this.booleanDefault(),
+            intranet: this.booleanDefault(),
+            sites: this.booleanDefault(),
+            erp: this.booleanDefault(),
+            database: this.booleanDefault(),
+            servers: this.booleanDefault(),
+        };
+    }
     // Templates
     scoreTemplate() {
         return {
@@ -141,6 +219,13 @@ class Compliance {
         };
     }
     isEnable() {
+        return {
+            type: Boolean,
+            required: true,
+            default: false,
+        };
+    }
+    booleanDefault() {
         return {
             type: Boolean,
             required: true,
