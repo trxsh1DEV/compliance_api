@@ -6,10 +6,9 @@ import loginAndAdmin from '../middlewares/loginAndAdmin';
 const router = Router();
 
 router.post('/', ClientsController.store);
-router.get('/', loginAndAdmin, ClientsController.findAllClients);
-router.get('/:id', loginAndAdmin, ClientsController.show);
+router.get('/all', loginAndAdmin, ClientsController.findAllClients);
+router.get('/:id?', loginAndAdmin, ClientsController.show);
 router.patch('/:id', ClientsController.update);
-router.delete('/:id', ClientsController.delete)
+router.delete('/:id', ClientsController.delete);
 
 export default router;
-('');

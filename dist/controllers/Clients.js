@@ -25,17 +25,17 @@ class ClientsController {
     }
     async show(req, res) {
         try {
-            const { id } = req.params;
-            // const { isOwnProfile, isAdmin } = req.body;
+            let { id } = req.params;
+            if (!id) {
+                id = req.body.clientId;
+            }
             if (!(0, mongoose_1.isValidObjectId)(id))
-                return res.status(400).json({ errors: ['ID inválido'] });
+                return res.status(400).json({ errors: 'ID inválido' });
             const client = await clientService_1.default.show(id);
             if (!client)
                 return res.status(404).json({
                     errors: 'Client not found',
                 });
-            // if (!isAdmin && !isOwnProfile)
-            //   res.status(401).json({ errors: ['Unauthorized'] });
             return res.status(200).json(client);
         }
         catch (err) {
@@ -52,6 +52,10 @@ class ClientsController {
                     errors: ['Submit all fields for registration'],
                 });
             }
+            if (password.lenght < 8 && password.lenght > 30)
+                return res.status(400).json({
+                    errors: ['A senha deve ter entre 8 e 30 caracteres'],
+                });
             const newClient = await clientService_1.default.create(req.body);
             if (!newClient)
                 res.status(404).json({ errors: 'Error creating client' });

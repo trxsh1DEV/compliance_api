@@ -24,6 +24,10 @@ class Clients {
                 type: String,
                 required: true,
                 select: false,
+                validate: {
+                    validator: (value) => value.length < 8 && value.length > 30,
+                    message: 'A senha deve ter entre 8 e 30 caracteres',
+                },
             },
             avatar: {
                 type: String,

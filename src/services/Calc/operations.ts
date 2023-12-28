@@ -110,13 +110,6 @@ export const calculatePointing = async (
     security.weights +
     services.weights;
 
-  // console.log(
-  //   averageBkp,
-  //   averageHa,
-  //   averageServer,
-  //   averageFirewall,
-  //   averageInventory,
-  // );
   if (
     !averageBkp &&
     !averageHa &&

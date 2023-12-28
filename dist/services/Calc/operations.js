@@ -49,13 +49,6 @@ const calculatePointing = async (infra, complianceId) => {
         inventory.weights +
         security.weights +
         services.weights;
-    // console.log(
-    //   averageBkp,
-    //   averageHa,
-    //   averageServer,
-    //   averageFirewall,
-    //   averageInventory,
-    // );
     if (!averageBkp &&
         !averageHa &&
         !averageServer &&
