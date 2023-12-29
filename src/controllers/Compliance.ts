@@ -119,8 +119,8 @@ class ComplianceController {
 
   async update(req: Request, res: Response) {
     try {
-      const { id } = req.params;
-      const { compliance: complianceId } = req.body.data;
+      const complianceId = req.params.id;
+      const { client: id } = req.body.data;
 
       if (!isValidObjectId(id) || !isValidObjectId(complianceId))
         return res.status(400).json({ errors: 'ID inválido' });
@@ -133,15 +133,7 @@ class ComplianceController {
       for (const item of client?.compliances) {
         if (item._id.equals(complianceId)) {
           const dataInfra = req.body.data;
-          console.log(
-            dataInfra.server,
-            dataInfra.ha,
-            dataInfra.backup,
-            dataInfra.firewall,
-            dataInfra.security,
-            dataInfra.inventory,
-            dataInfra.servicesOutsourcing,
-          );
+          // console.log(dataInfra);
 
           if (
             !dataInfra.server &&
@@ -157,7 +149,7 @@ class ComplianceController {
             });
           }
 
-          await complianceService.update(dataInfra);
+          await complianceService.update(dataInfra, complianceId);
           return res
             .status(200)
             .json({ message: 'Compliance updated successfully' });

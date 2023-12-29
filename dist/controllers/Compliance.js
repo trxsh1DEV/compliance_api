@@ -104,8 +104,8 @@ class ComplianceController {
     }
     async update(req, res) {
         try {
-            const { id } = req.params;
-            const { compliance: complianceId } = req.body.data;
+            const complianceId = req.params.id;
+            const { client: id } = req.body.data;
             if (!(0, mongoose_1.isValidObjectId)(id) || !(0, mongoose_1.isValidObjectId)(complianceId))
                 return res.status(400).json({ errors: 'ID inválido' });
             const client = await clientService_1.default.show(id);
@@ -114,7 +114,7 @@ class ComplianceController {
             for (const item of client === null || client === void 0 ? void 0 : client.compliances) {
                 if (item._id.equals(complianceId)) {
                     const dataInfra = req.body.data;
-                    console.log(dataInfra.server, dataInfra.ha, dataInfra.backup, dataInfra.firewall, dataInfra.security, dataInfra.inventory, dataInfra.servicesOutsourcing);
+                    // console.log(dataInfra);
                     if (!dataInfra.server &&
                         !dataInfra.ha &&
                         !dataInfra.backup &&
@@ -126,7 +126,7 @@ class ComplianceController {
                             errors: 'Submit at least one for update',
                         });
                     }
-                    await complianceService_1.default.update(dataInfra);
+                    await complianceService_1.default.update(dataInfra, complianceId);
                     return res
                         .status(200)
                         .json({ message: 'Compliance updated successfully' });

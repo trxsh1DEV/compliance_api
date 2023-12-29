@@ -1,11 +1,12 @@
 import Compliance from '../../models/Compliance';
 
 class ComplianceService {
-  static async update(clientData: any) {
-    const { server, ha, backup, compliance } = clientData;
+  static async update(clientData: any, id: string) {
+    const { server, ha, backup } = clientData;
+    console.log(clientData);
 
     return await Compliance.findOneAndUpdate(
-      { _id: compliance },
+      { _id: id },
       {
         server,
         ha,
