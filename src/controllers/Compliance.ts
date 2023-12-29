@@ -3,6 +3,7 @@ import { isValidObjectId } from 'mongoose';
 import complianceService from '../services/compliance/complianceService';
 import clientService from '../services/clients/clientService';
 import { calculatePointing } from '../services/calc/operations';
+import { infraDefault } from '../services/data/infraDefault';
 
 class ComplianceController {
   // async index(req: Request, res: Response) {
@@ -69,12 +70,23 @@ class ComplianceController {
 
   async latestCompliance(req: Request, res: Response) {
     try {
-      const latestCompliance = await complianceService.latest();
+      const id = req.body.client || req.body.clientId;
 
-      if (!latestCompliance) {
-        return res.status(404).json({ errors: 'Compliance Not Found' });
+      const client = await clientService.show(id);
+      let getLatestComplianceId = client?.compliances.pop()?.toString();
+
+      if (getLatestComplianceId) {
+        const latestCompliance = await complianceService.show(
+          getLatestComplianceId,
+        );
+
+        if (!latestCompliance) {
+          return res.status(404).json({ errors: 'Compliance Not Found' });
+        }
+        return res.status(200).json(latestCompliance);
       }
-      return res.status(200).json(latestCompliance);
+
+      return res.status(200).json(infraDefault);
     } catch (err: any) {
       return res.status(500).json({ errors: err.message });
     }
@@ -121,8 +133,25 @@ class ComplianceController {
       for (const item of client?.compliances) {
         if (item._id.equals(complianceId)) {
           const dataInfra = req.body.data;
+          console.log(
+            dataInfra.server,
+            dataInfra.ha,
+            dataInfra.backup,
+            dataInfra.firewall,
+            dataInfra.security,
+            dataInfra.inventory,
+            dataInfra.servicesOutsourcing,
+          );
 
-          if (!dataInfra.server && !dataInfra.ha && !dataInfra.backup) {
+          if (
+            !dataInfra.server &&
+            !dataInfra.ha &&
+            !dataInfra.backup &&
+            !dataInfra.firewall &&
+            !dataInfra.security &&
+            !dataInfra.inventory &&
+            !dataInfra.servicesOutsourcing
+          ) {
             return res.status(400).json({
               errors: 'Submit at least one for update',
             });

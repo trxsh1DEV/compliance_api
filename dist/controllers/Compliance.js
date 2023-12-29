@@ -7,6 +7,7 @@ const mongoose_1 = require("mongoose");
 const complianceService_1 = __importDefault(require("../services/compliance/complianceService"));
 const clientService_1 = __importDefault(require("../services/clients/clientService"));
 const operations_1 = require("../services/calc/operations");
+const infraDefault_1 = require("../services/data/infraDefault");
 class ComplianceController {
     // async index(req: Request, res: Response) {
     //   const devices = await Compliance.find();
@@ -62,12 +63,19 @@ class ComplianceController {
         }
     }
     async latestCompliance(req, res) {
+        var _a;
         try {
-            const latestCompliance = await complianceService_1.default.latest();
-            if (!latestCompliance) {
-                return res.status(404).json({ errors: 'Compliance Not Found' });
+            const id = req.body.client || req.body.clientId;
+            const client = await clientService_1.default.show(id);
+            let getLatestComplianceId = (_a = client === null || client === void 0 ? void 0 : client.compliances.pop()) === null || _a === void 0 ? void 0 : _a.toString();
+            if (getLatestComplianceId) {
+                const latestCompliance = await complianceService_1.default.show(getLatestComplianceId);
+                if (!latestCompliance) {
+                    return res.status(404).json({ errors: 'Compliance Not Found' });
+                }
+                return res.status(200).json(latestCompliance);
             }
-            return res.status(200).json(latestCompliance);
+            return res.status(200).json(infraDefault_1.infraDefault);
         }
         catch (err) {
             return res.status(500).json({ errors: err.message });
@@ -106,7 +114,14 @@ class ComplianceController {
             for (const item of client === null || client === void 0 ? void 0 : client.compliances) {
                 if (item._id.equals(complianceId)) {
                     const dataInfra = req.body.data;
-                    if (!dataInfra.server && !dataInfra.ha && !dataInfra.backup) {
+                    console.log(dataInfra.server, dataInfra.ha, dataInfra.backup, dataInfra.firewall, dataInfra.security, dataInfra.inventory, dataInfra.servicesOutsourcing);
+                    if (!dataInfra.server &&
+                        !dataInfra.ha &&
+                        !dataInfra.backup &&
+                        !dataInfra.firewall &&
+                        !dataInfra.security &&
+                        !dataInfra.inventory &&
+                        !dataInfra.servicesOutsourcing) {
                         return res.status(400).json({
                             errors: 'Submit at least one for update',
                         });

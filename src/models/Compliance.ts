@@ -276,7 +276,7 @@ class Compliance {
   templateDefault(description: boolean = false) {
     return {
       score: this.scoreTemplate(),
-      description: { type: String, required: description },
+      description: { type: String, required: false },
       points: this.pointingTemplate(),
     };
   }
