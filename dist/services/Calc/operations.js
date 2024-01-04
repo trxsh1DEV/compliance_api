@@ -22,12 +22,15 @@ const calculatePointing = async (infra, complianceId) => {
     services = defaultCalc(infra.servicesOutsourcing);
     const averageHa = calculatePercentage(ha.scores, ha.weights);
     const averageBkp = calculatePercentage(bkp.scores, bkp.weights);
+    console.log('oi');
+    console.log(servers);
     const averageServer = servers.map((item) => {
         return {
             name: item.serverName,
             pointing: calculatePercentage(item.scores, item.weights),
         };
     });
+    console.log('oi2');
     const averageFirewall = calculatePercentage(firewall.scores, firewall.weights);
     const averageInventory = calculatePercentage(inventory.scores, inventory.weights);
     const averageSecurity = calculatePercentage(security.scores, security.weights);

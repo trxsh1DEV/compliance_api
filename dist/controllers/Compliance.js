@@ -105,7 +105,7 @@ class ComplianceController {
     async update(req, res) {
         try {
             const complianceId = req.params.id;
-            const { client: id } = req.body.data;
+            const { client: id } = req.body;
             if (!(0, mongoose_1.isValidObjectId)(id) || !(0, mongoose_1.isValidObjectId)(complianceId))
                 return res.status(400).json({ errors: 'ID inválido' });
             const client = await clientService_1.default.show(id);
@@ -113,8 +113,7 @@ class ComplianceController {
                 return res.status(404).json({ errors: ['Cliente não encontrado'] });
             for (const item of client === null || client === void 0 ? void 0 : client.compliances) {
                 if (item._id.equals(complianceId)) {
-                    const dataInfra = req.body.data;
-                    // console.log(dataInfra);
+                    const dataInfra = req.body;
                     if (!dataInfra.server &&
                         !dataInfra.ha &&
                         !dataInfra.backup &&
@@ -123,7 +122,7 @@ class ComplianceController {
                         !dataInfra.inventory &&
                         !dataInfra.servicesOutsourcing) {
                         return res.status(400).json({
-                            errors: 'Submit at least one for update',
+                            errors: ['Submit at least one for update'],
                         });
                     }
                     await complianceService_1.default.update(dataInfra, complianceId);

@@ -57,6 +57,7 @@ class Compliance {
 
   createFrequencySchema(): SchemaDefinition {
     return {
+      enabled: this.isEnable(),
       level: { type: String, enum: ['low', 'medium', 'high'] },
       score: this.scoreTemplate(),
       weight: this.weightTemplate(8),
@@ -146,7 +147,7 @@ class Compliance {
         },
       },
       weight: this.weightTemplate(7),
-      ...this.templateDefault(true),
+      ...this.templateDefault(),
     };
   }
 
@@ -175,7 +176,7 @@ class Compliance {
       restoration: this.booleanDefault(),
       monitoring: this.booleanDefault(),
       weight: this.weightTemplate(9),
-      ...this.templateDefault(true),
+      ...this.templateDefault(),
     };
   }
 
@@ -193,14 +194,14 @@ class Compliance {
           'Equipamentos',
         ],
       },
-      contacts: { type: Boolean, required: true },
+      contacts: { type: Boolean, default: false },
       agentInventory: {
         type: String,
         enum: ['None', 'Few', 'Medium', 'Many', 'All'],
         default: 'None',
       },
       weight: this.weightTemplate(7),
-      ...this.templateDefault(true),
+      ...this.templateDefault(),
     };
   }
 
@@ -220,7 +221,7 @@ class Compliance {
       },
       lgpd: this.booleanDefault(),
       weight: this.weightTemplate(8),
-      ...this.templateDefault(true),
+      ...this.templateDefault(),
     };
   }
 
@@ -234,7 +235,7 @@ class Compliance {
       database: this.booleanDefault(),
       servers: this.booleanDefault(),
       weight: this.weightTemplate(6),
-      ...this.templateDefault(true),
+      ...this.templateDefault(),
     };
   }
 
@@ -280,9 +281,9 @@ class Compliance {
       points: this.pointingTemplate(),
     };
   }
-  templateObjectFather() {
+  templateObjectFather(description: boolean = false) {
     return {
-      description: { type: String, required: true },
+      description: { type: String, required: description },
       points: this.pointingTemplate(),
     };
   }

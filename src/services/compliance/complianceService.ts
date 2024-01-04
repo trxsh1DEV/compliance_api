@@ -1,9 +1,17 @@
 import Compliance from '../../models/Compliance';
+import { ICompliance } from '../../types/ModelTypesCompliance';
 
 class ComplianceService {
-  static async update(clientData: any, id: string) {
-    const { server, ha, backup } = clientData;
-    console.log(clientData);
+  static async update(clientData: ICompliance, id: string) {
+    const {
+      server,
+      ha,
+      backup,
+      inventory,
+      servicesOutsourcing,
+      firewall,
+      security,
+    } = clientData;
 
     return await Compliance.findOneAndUpdate(
       { _id: id },
@@ -11,6 +19,10 @@ class ComplianceService {
         server,
         ha,
         backup,
+        inventory,
+        servicesOutsourcing,
+        firewall,
+        security,
       },
     );
   }

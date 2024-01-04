@@ -37,6 +37,7 @@ class Compliance {
     }
     createFrequencySchema() {
         return {
+            enabled: this.isEnable(),
             level: { type: String, enum: ['low', 'medium', 'high'] },
             score: this.scoreTemplate(),
             weight: this.weightTemplate(8),
@@ -100,7 +101,7 @@ class Compliance {
                     validator: (value) => value >= 0,
                     message: 'O tempo deve ser um numero que será convertido em horas e não deve ser um numero negativo',
                 },
-            }, weight: this.weightTemplate(7) }, this.templateDefault(true));
+            }, weight: this.weightTemplate(7) }, this.templateDefault());
     }
     // HA
     // Firewall
@@ -115,7 +116,7 @@ class Compliance {
                     'SonicWall',
                     'PFsense',
                 ],
-            }, rules: { type: String, enum: ['weak', 'medium', 'good'] }, segmentation: this.booleanDefault(), vpn: { type: String, enum: ['weak', 'medium', 'good'] }, ips: this.booleanDefault(), backup: this.booleanDefault(), restoration: this.booleanDefault(), monitoring: this.booleanDefault(), weight: this.weightTemplate(9) }, this.templateDefault(true));
+            }, rules: { type: String, enum: ['weak', 'medium', 'good'] }, segmentation: this.booleanDefault(), vpn: { type: String, enum: ['weak', 'medium', 'good'] }, ips: this.booleanDefault(), backup: this.booleanDefault(), restoration: this.booleanDefault(), monitoring: this.booleanDefault(), weight: this.weightTemplate(9) }, this.templateDefault());
     }
     // Inventory
     createInventory() {
@@ -128,11 +129,11 @@ class Compliance {
                     'Impressoras',
                     'Equipamentos',
                 ],
-            }, contacts: { type: Boolean, required: true }, agentInventory: {
+            }, contacts: { type: Boolean, default: false }, agentInventory: {
                 type: String,
                 enum: ['None', 'Few', 'Medium', 'Many', 'All'],
                 default: 'None',
-            }, weight: this.weightTemplate(7) }, this.templateDefault(true));
+            }, weight: this.weightTemplate(7) }, this.templateDefault());
     }
     createSecurity() {
         return Object.assign({ antivirus: {
@@ -143,10 +144,10 @@ class Compliance {
                 type: String,
                 enum: ['None', 'Basic', 'Advanced'],
                 default: 'None',
-            }, lgpd: this.booleanDefault(), weight: this.weightTemplate(8) }, this.templateDefault(true));
+            }, lgpd: this.booleanDefault(), weight: this.weightTemplate(8) }, this.templateDefault());
     }
     createServices() {
-        return Object.assign({ email: this.booleanDefault(), fileserver: this.booleanDefault(), intranet: this.booleanDefault(), sites: this.booleanDefault(), erp: this.booleanDefault(), database: this.booleanDefault(), servers: this.booleanDefault(), weight: this.weightTemplate(6) }, this.templateDefault(true));
+        return Object.assign({ email: this.booleanDefault(), fileserver: this.booleanDefault(), intranet: this.booleanDefault(), sites: this.booleanDefault(), erp: this.booleanDefault(), database: this.booleanDefault(), servers: this.booleanDefault(), weight: this.weightTemplate(6) }, this.templateDefault());
     }
     // Templates
     scoreTemplate() {
@@ -190,9 +191,9 @@ class Compliance {
             points: this.pointingTemplate(),
         };
     }
-    templateObjectFather() {
+    templateObjectFather(description = false) {
         return {
-            description: { type: String, required: true },
+            description: { type: String, required: description },
             points: this.pointingTemplate(),
         };
     }
