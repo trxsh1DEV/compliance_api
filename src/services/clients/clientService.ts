@@ -16,8 +16,19 @@ class ClienteService {
 
   static async update(clientData: ClientType) {
     try {
-      const { avatar, email, id, name, password, social_reason, isAdmin } =
-        clientData;
+      const {
+        avatar,
+        email,
+        id,
+        name,
+        password,
+        social_reason,
+        isAdmin,
+        criticalProblems,
+        typeContract,
+        cnpj,
+        contact,
+      } = clientData;
 
       return await Clients.findOneAndUpdate(
         { _id: id },
@@ -28,6 +39,10 @@ class ClienteService {
           password,
           social_reason,
           isAdmin,
+          criticalProblems,
+          typeContract,
+          cnpj,
+          contact,
         },
         { new: true },
       );

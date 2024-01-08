@@ -115,8 +115,9 @@ class Compliance {
                     'Cisco',
                     'SonicWall',
                     'PFsense',
+                    'None',
                 ],
-            }, rules: { type: String, enum: ['weak', 'medium', 'good'] }, segmentation: this.booleanDefault(), vpn: { type: String, enum: ['weak', 'medium', 'good'] }, ips: this.booleanDefault(), backup: this.booleanDefault(), restoration: this.booleanDefault(), monitoring: this.booleanDefault(), weight: this.weightTemplate(9) }, this.templateDefault());
+            }, rules: { type: String, enum: ['Fraco', 'Ok', 'Bom', 'None'] }, segmentation: this.booleanDefault(), vpn: { type: String, enum: ['Fraco', 'Ok', 'Bom', 'None'] }, ips: this.booleanDefault(), backup: this.booleanDefault(), restoration: this.booleanDefault(), monitoring: this.booleanDefault(), weight: this.weightTemplate(9) }, this.templateDefault());
     }
     // Inventory
     createInventory() {

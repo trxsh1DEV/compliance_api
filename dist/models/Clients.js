@@ -24,10 +24,10 @@ class Clients {
                 type: String,
                 required: true,
                 select: false,
-                // validate: {
-                //   validator: (value: string) => value.length < 8,
-                //   message: 'A senha deve ter entre 8 e 30 caracteres',
-                // },
+                validate: {
+                    validator: (value) => value.length <= 8,
+                    message: 'A senha deve ter entre 8 e 30 caracteres',
+                },
             },
             avatar: {
                 type: String,
@@ -36,6 +36,22 @@ class Clients {
             isAdmin: {
                 type: Boolean,
                 default: false,
+            },
+            contact: {
+                type: String,
+                unique: true,
+            },
+            cnpj: {
+                type: String,
+                unique: true,
+            },
+            criticalProblems: {
+                type: Boolean,
+                default: false,
+            },
+            typeContract: {
+                type: String,
+                enum: ['Fixo', 'Avulso'],
             },
             compliances: [
                 {

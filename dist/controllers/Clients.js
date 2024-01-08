@@ -68,7 +68,7 @@ class ClientsController {
         }
     }
     async update(req, res) {
-        const { name, social_reason, email, password, avatar, isAdmin } = req.body;
+        const { name, social_reason, email, password, avatar, isAdmin, contact, cnpj, criticalProblems, typeContract, } = req.body;
         const { id } = req.params;
         if (!(0, mongoose_1.isValidObjectId)(id))
             return res.status(400).json({ errors: 'ID inválido' });
@@ -77,7 +77,12 @@ class ClientsController {
             !password &&
             !avatar &&
             !social_reason &&
-            typeof isAdmin !== 'boolean') {
+            !contact &&
+            !cnpj &&
+            !criticalProblems &&
+            typeof isAdmin !== 'boolean' &&
+            typeContract !== 'Fixo' &&
+            typeContract !== 'Avulso') {
             return res.status(400).json({
                 errors: 'Submit at least one for update',
             });
@@ -90,7 +95,11 @@ class ClientsController {
                 email,
                 password,
                 avatar,
-                isAdmin,
+                isAdmin: !!isAdmin,
+                contact,
+                cnpj,
+                criticalProblems,
+                typeContract,
             };
             const updatedClient = await clientService_1.default.update(clientData);
             if (!updatedClient) {
@@ -98,8 +107,8 @@ class ClientsController {
                     errors: 'Cliente não encontrado',
                 });
             }
-            // res.status(200).json({ message: `Client updated successfully` });
-            res.status(200).json(updatedClient);
+            res.status(200).json({ message: `Client updated successfully` });
+            // res.status(200).json(updatedClient);
         }
         catch (err) {
             return res.status(500).json({

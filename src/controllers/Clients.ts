@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 // import Compliance from '../models/Compliance';
 import clientService from '../services/clients/clientService';
 import { isValidObjectId } from 'mongoose';
+import { ClientType } from '../types/ControllersType';
 
 class ClientsController {
   async findAllClients(req: Request, res: Response) {
@@ -72,7 +73,18 @@ class ClientsController {
   }
 
   async update(req: any, res: Response) {
-    const { name, social_reason, email, password, avatar, isAdmin } = req.body;
+    const {
+      name,
+      social_reason,
+      email,
+      password,
+      avatar,
+      isAdmin,
+      contact,
+      cnpj,
+      criticalProblems,
+      typeContract,
+    }: ClientType = req.body;
     const { id } = req.params;
 
     if (!isValidObjectId(id))
@@ -84,7 +96,12 @@ class ClientsController {
       !password &&
       !avatar &&
       !social_reason &&
-      typeof isAdmin !== 'boolean'
+      !contact &&
+      !cnpj &&
+      !criticalProblems &&
+      typeof isAdmin !== 'boolean' &&
+      typeContract !== 'Fixo' &&
+      typeContract !== 'Avulso'
     ) {
       return res.status(400).json({
         errors: 'Submit at least one for update',
@@ -99,7 +116,11 @@ class ClientsController {
         email,
         password,
         avatar,
-        isAdmin,
+        isAdmin: !!isAdmin,
+        contact,
+        cnpj,
+        criticalProblems,
+        typeContract,
       };
 
       const updatedClient = await clientService.update(clientData);
@@ -109,8 +130,8 @@ class ClientsController {
         });
       }
 
-      // res.status(200).json({ message: `Client updated successfully` });
-      res.status(200).json(updatedClient);
+      res.status(200).json({ message: `Client updated successfully` });
+      // res.status(200).json(updatedClient);
     } catch (err: any) {
       return res.status(500).json({
         errors: [err.message],
