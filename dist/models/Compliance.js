@@ -129,6 +129,7 @@ class Compliance {
                     'Servidores',
                     'Impressoras',
                     'Equipamentos',
+                    'Nenhum',
                 ],
             }, contacts: { type: Boolean, default: false }, agentInventory: {
                 type: String,
@@ -143,8 +144,8 @@ class Compliance {
                 default: 'None',
             }, policyPassword: this.booleanDefault(), accessAuditing: this.booleanDefault(), gpo: {
                 type: String,
-                enum: ['None', 'Basic', 'Advanced'],
-                default: 'None',
+                enum: ['Nenhuma', 'Basica', 'Avançada'],
+                default: 'Nenhuma',
             }, lgpd: this.booleanDefault(), weight: this.weightTemplate(8) }, this.templateDefault());
     }
     createServices() {

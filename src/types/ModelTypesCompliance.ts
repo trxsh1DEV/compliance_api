@@ -131,7 +131,7 @@ export interface ISecurity {
   antivirus: ['None', 'Few', 'Medium', 'Many', 'All'];
   policyPassword: boolean;
   accessAuditing: boolean;
-  gpo: ['None', 'Basic', 'Advanced'];
+  gpo: ['Nenhuma', 'Basica', 'Avançada'];
   lgpd: boolean;
   score: number;
   weight: number;

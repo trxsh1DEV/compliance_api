@@ -13,6 +13,7 @@ const calculatePointing = async (infra, complianceId) => {
     let services = { scores: 0, weights: 0 };
     serverArray.forEach((items) => {
         servers = ServersCalc(items);
+        console.log(servers);
     });
     ha = defaultCalc(infra.ha);
     bkp = backupCalc(infra.backup);
@@ -22,19 +23,16 @@ const calculatePointing = async (infra, complianceId) => {
     services = defaultCalc(infra.servicesOutsourcing);
     const averageHa = calculatePercentage(ha.scores, ha.weights);
     const averageBkp = calculatePercentage(bkp.scores, bkp.weights);
-    console.log('oi');
-    console.log(servers);
+    const averageFirewall = calculatePercentage(firewall.scores, firewall.weights);
+    const averageInventory = calculatePercentage(inventory.scores, inventory.weights);
+    const averageSecurity = calculatePercentage(security.scores, security.weights);
+    const averageServices = calculatePercentage(services.scores, services.weights);
     const averageServer = servers.map((item) => {
         return {
             name: item.serverName,
             pointing: calculatePercentage(item.scores, item.weights),
         };
     });
-    console.log('oi2');
-    const averageFirewall = calculatePercentage(firewall.scores, firewall.weights);
-    const averageInventory = calculatePercentage(inventory.scores, inventory.weights);
-    const averageSecurity = calculatePercentage(security.scores, security.weights);
-    const averageServices = calculatePercentage(services.scores, services.weights);
     const serverTotalScores = servers.reduce((ac, current) => ac + current.scores, 0);
     const serverTotalWeights = servers.reduce((ac, current) => ac + current.weights, 0);
     const averageAllServers = calculatePercentage(serverTotalScores, serverTotalWeights);
@@ -98,9 +96,14 @@ const backupCalc = (itemsBackup) => {
 // IServers
 const ServersCalc = (itemsServer) => {
     const { enabled } = itemsServer;
-    if (!enabled)
-        return null;
     let pointsAllServers = [];
+    if (!enabled) {
+        pointsAllServers.push({
+            serverName: '',
+            scores: 0,
+            weights: 10,
+        });
+    }
     for (const obj of itemsServer.servers) {
         let pointGeneral = obj.score * obj.weight;
         let config = obj.config.score * obj.config.weight;

@@ -46,6 +46,7 @@ export const calculatePointing = async (
 
   serverArray.forEach((items) => {
     servers = ServersCalc(items);
+    console.log(servers);
   });
   ha = defaultCalc(infra.ha);
   bkp = backupCalc(infra.backup);
@@ -56,15 +57,6 @@ export const calculatePointing = async (
 
   const averageHa = calculatePercentage(ha.scores, ha.weights);
   const averageBkp = calculatePercentage(bkp.scores, bkp.weights);
-  console.log('oi');
-  console.log(servers);
-  const averageServer = servers.map((item) => {
-    return {
-      name: item.serverName,
-      pointing: calculatePercentage(item.scores, item.weights),
-    };
-  });
-  console.log('oi2');
   const averageFirewall = calculatePercentage(
     firewall.scores,
     firewall.weights,
@@ -81,6 +73,12 @@ export const calculatePointing = async (
     services.scores,
     services.weights,
   );
+  const averageServer = servers.map((item) => {
+    return {
+      name: item.serverName,
+      pointing: calculatePercentage(item.scores, item.weights),
+    };
+  });
 
   const serverTotalScores = servers.reduce(
     (ac, current) => ac + current.scores,
@@ -139,7 +137,6 @@ export const calculatePointing = async (
 
   try {
     const data = await postDataInfra(averages, infra, complianceId);
-
     // console.log(data);
     return data;
   } catch (err: any) {
@@ -178,11 +175,17 @@ const backupCalc = (itemsBackup: IBackupItems) => {
 };
 
 // IServers
-const ServersCalc = (itemsServer: IServers): TypeAllServers[] | null => {
+const ServersCalc = (itemsServer: IServers): TypeAllServers[] => {
   const { enabled } = itemsServer;
-  if (!enabled) return null;
-
   let pointsAllServers: TypeAllServers[] = [];
+
+  if (!enabled) {
+    pointsAllServers.push({
+      serverName: '',
+      scores: 0,
+      weights: 10,
+    });
+  }
 
   for (const obj of itemsServer.servers) {
     let pointGeneral = obj.score * obj.weight;
