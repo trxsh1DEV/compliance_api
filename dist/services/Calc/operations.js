@@ -13,7 +13,6 @@ const calculatePointing = async (infra, complianceId) => {
     let services = { scores: 0, weights: 0 };
     serverArray.forEach((items) => {
         servers = ServersCalc(items);
-        console.log(servers);
     });
     ha = defaultCalc(infra.ha);
     bkp = backupCalc(infra.backup);

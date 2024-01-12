@@ -46,7 +46,6 @@ export const calculatePointing = async (
 
   serverArray.forEach((items) => {
     servers = ServersCalc(items);
-    console.log(servers);
   });
   ha = defaultCalc(infra.ha);
   bkp = backupCalc(infra.backup);

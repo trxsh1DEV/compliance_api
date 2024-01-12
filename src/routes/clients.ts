@@ -1,14 +1,15 @@
-import { Router } from 'express';
-import ClientsController from '../controllers/Clients';
-import { validId, validResponse } from '../middlewares/validates';
-import loginAndAdmin from '../middlewares/loginAndAdmin';
+import { Router } from "express";
+import ClientsController from "../controllers/Clients";
+import loginRequired from "../middlewares/loginRequired";
+import authAdmin from "../middlewares/authAdmin";
 
 const router = Router();
 
-router.post('/', ClientsController.store);
-router.get('/all', loginAndAdmin, ClientsController.findAllClients);
-router.get('/:id?', loginAndAdmin, ClientsController.show);
-router.patch('/:id', ClientsController.update);
-router.delete('/:id', ClientsController.delete);
+router.post("/", authAdmin, ClientsController.store);
+router.get("/show", authAdmin, ClientsController.findAllClients);
+router.get("/show/:id", authAdmin, ClientsController.show);
+router.get("/", loginRequired, ClientsController.show);
+router.patch("/:id", authAdmin, ClientsController.update);
+router.delete("/:id", authAdmin, ClientsController.delete);
 
 export default router;
