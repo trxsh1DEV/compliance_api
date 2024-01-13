@@ -7,7 +7,6 @@ class AuthController {
     try {
       const { email, password } = req.body;
       const client = (await loginService(email)) || "";
-      const ONEDAY_MILISSECONDS = 86400000;
 
       const passwordIsValid = bcrypt.compareSync(password, client && client.password);
       if (!passwordIsValid || client == "") return res.status(404).json({ errors: ["Wrong credentials"] });
@@ -16,7 +15,7 @@ class AuthController {
         return res.status(404).json({ errors: ["Wrong credentials"] });
       }
       const token = generateToken(client.id, client.isAdmin);
-      res.cookie("token", token, { httpOnly: true, maxAge: ONEDAY_MILISSECONDS });
+      // res.cookie("token", token, { httpOnly: true, maxAge: ONEDAY_MILISSECONDS });
 
       return res.status(200).json({ token });
     } catch (err: any) {
