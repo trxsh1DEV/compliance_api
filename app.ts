@@ -1,10 +1,9 @@
-import express, { Application } from 'express';
-import cors from 'cors';
-// import deviceRoutes from './src/routes/devices';
-// import deviceManualRoutes from './src/routes/devicesManual';
-import complianceRoutes from './src/routes/compliance';
-import clientsRoutes from './src/routes/clients';
-import authRoutes from './src/routes/auth';
+import express, { Application } from "express";
+import cors from "cors";
+import complianceRoutes from "./src/routes/compliance";
+import clientsRoutes from "./src/routes/clients";
+import authRoutes from "./src/routes/auth";
+import cookieParser from "cookie-parser";
 
 class App {
   public app: Application;
@@ -17,9 +16,8 @@ class App {
 
   private middlewares(): void {
     // const allowedOrigins = ['http://localhost:5173', 'http://179.213.2.192'];
-    const allowedOrigins = 'http://localhost:5173';
     this.app.use(
-      cors(),
+      cors()
       //   {
       //   origin: (origin, callback) => {
       //     if (!origin || allowedOrigins.includes(origin)) {
@@ -35,14 +33,13 @@ class App {
     );
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
+    this.app.use(cookieParser());
   }
 
   private routes(): void {
-    // this.app.use('/api/devices/', deviceRoutes);
-    // this.app.use('/api/devices-manual/', deviceManualRoutes);
-    this.app.use('/api/auth/', authRoutes);
-    this.app.use('/api/compliance/', complianceRoutes);
-    this.app.use('/api/clients/', clientsRoutes);
+    this.app.use("/api/auth/", authRoutes);
+    this.app.use("/api/compliance/", complianceRoutes);
+    this.app.use("/api/clients/", clientsRoutes);
   }
 }
 

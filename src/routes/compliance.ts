@@ -1,14 +1,15 @@
 import { Router } from "express";
 import Compliance from "../controllers/Compliance";
-import loginAndAdmin from "../middlewares/validationAuth";
+import authAdmin from "../middlewares/authAdmin";
+import loginRequired from "../middlewares/loginRequired";
 
 const router = Router();
 
-router.post("/", loginAndAdmin, Compliance.store);
-router.post("/latest/", Compliance.latestCompliance);
-router.get("/calculate/:id", Compliance.complianceCalculate);
-router.get("/:complianceId", loginAndAdmin, Compliance.show);
-router.patch("/:id", loginAndAdmin, Compliance.update);
-router.delete("/:id", loginAndAdmin, Compliance.delete);
+router.post("/", authAdmin, Compliance.store);
+router.post("/latest/", loginRequired, Compliance.latestCompliance);
+router.get("/calculate/:id", authAdmin, Compliance.complianceCalculate);
+router.get("/:complianceId", authAdmin, Compliance.show);
+router.patch("/:id", authAdmin, Compliance.update);
+router.delete("/:id", authAdmin, Compliance.delete);
 
 export default router;
