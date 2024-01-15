@@ -3,7 +3,7 @@ import cors from "cors";
 import complianceRoutes from "./src/routes/compliance";
 import clientsRoutes from "./src/routes/clients";
 import authRoutes from "./src/routes/auth";
-// import cookieParser from "cookie-parser";
+import commomUsersRoutes from "./src/routes/commomUser";
 import helmet from "helmet";
 
 class App {
@@ -26,13 +26,13 @@ class App {
     this.app.use(cors(corsOptions));
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
-    // this.app.use(cookieParser());
   }
 
   private routes(): void {
     this.app.use("/api/auth/", authRoutes);
     this.app.use("/api/compliance/", complianceRoutes);
-    this.app.use("/api/clients/", clientsRoutes);
+    this.app.use("/api/admin/clients/", clientsRoutes);
+    this.app.use("/api/user/", commomUsersRoutes);
   }
 }
 

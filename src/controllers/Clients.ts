@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 // import Compliance from '../models/Compliance';
-import clientService from '../services/clients/clientService';
-import { isValidObjectId } from 'mongoose';
-import { ClientType } from '../types/ControllersType';
+import clientService from "../services/clients/clientService";
+import { isValidObjectId } from "mongoose";
+import { ClientType } from "../types/ControllersType";
 
 class ClientsController {
   async findAllClients(req: Request, res: Response) {
@@ -11,13 +11,13 @@ class ClientsController {
 
       if (clients.length <= 0) {
         return res.status(404).json({
-          errors: ['There are no registered users'],
+          errors: ["There are no registered users"]
         });
       }
       return res.status(200).json(clients);
     } catch (err: any) {
       return res.status(err.response.status).json({
-        errors: [err.message],
+        errors: [err.message]
       });
     }
   }
@@ -27,22 +27,22 @@ class ClientsController {
       let { id } = req.params;
 
       if (!id) {
+        // Aqui estou pegando o id q está no token e eu seto somente no middleware
         id = req.body.clientId;
       }
 
-      if (!isValidObjectId(id))
-        return res.status(400).json({ errors: 'ID inválido' });
+      if (!isValidObjectId(id)) return res.status(400).json({ errors: "ID inválido" });
       const client = await clientService.show(id);
 
       if (!client)
         return res.status(404).json({
-          errors: 'Client not found',
+          errors: "Client not found"
         });
 
       return res.status(200).json(client);
     } catch (err: any) {
       return res.status(400).json({
-        errors: [err.message],
+        errors: [err.message]
       });
     }
   }
@@ -52,22 +52,22 @@ class ClientsController {
       const { name, email, password } = req.body;
       if (!name || !email || !password) {
         return res.status(400).json({
-          errors: ['Submit all fields for registration'],
+          errors: ["Submit all fields for registration"]
         });
       }
 
       if (password.lenght < 8 && password.lenght > 30)
         return res.status(400).json({
-          errors: ['A senha deve ter entre 8 e 30 caracteres'],
+          errors: ["A senha deve ter entre 8 e 30 caracteres"]
         });
 
       const newClient = await clientService.create(req.body);
-      if (!newClient) res.status(404).json({ errors: 'Error creating client' });
+      if (!newClient) res.status(404).json({ errors: "Error creating client" });
 
-      return res.status(201).json('User created successfully');
+      return res.status(201).json("User created successfully");
     } catch (err: any) {
       return res.status(500).json({
-        errors: [err.message],
+        errors: [err.message]
       });
     }
   }
@@ -83,12 +83,15 @@ class ClientsController {
       contact,
       cnpj,
       criticalProblems,
-      typeContract,
+      typeContract
     }: ClientType = req.body;
-    const { id } = req.params;
+    let { id } = req.params;
 
-    if (!isValidObjectId(id))
-      return res.status(400).json({ errors: 'ID inválido' });
+    if (!id) {
+      id = req.body.clientId;
+    }
+
+    if (!isValidObjectId(id)) return res.status(400).json({ errors: "ID inválido" });
 
     if (
       !name &&
@@ -99,12 +102,12 @@ class ClientsController {
       !contact &&
       !cnpj &&
       !criticalProblems &&
-      typeof isAdmin !== 'boolean' &&
-      typeContract !== 'Fixo' &&
-      typeContract !== 'Avulso'
+      typeof isAdmin !== "boolean" &&
+      typeContract !== "Fixo" &&
+      typeContract !== "Avulso"
     ) {
       return res.status(400).json({
-        errors: 'Submit at least one for update',
+        errors: "Submit at least one for update"
       });
     }
 
@@ -120,13 +123,13 @@ class ClientsController {
         contact,
         cnpj,
         criticalProblems,
-        typeContract,
+        typeContract
       };
 
       const updatedClient = await clientService.update(clientData);
       if (!updatedClient) {
         return res.status(404).json({
-          errors: 'Cliente não encontrado',
+          errors: "Cliente não encontrado"
         });
       }
 
@@ -134,7 +137,7 @@ class ClientsController {
       // res.status(200).json(updatedClient);
     } catch (err: any) {
       return res.status(500).json({
-        errors: [err.message],
+        errors: [err.message]
       });
     }
   }
@@ -143,20 +146,19 @@ class ClientsController {
     try {
       const { id } = req.params;
 
-      if (!isValidObjectId(id))
-        return res.status(400).json({ errors: ['ID inválido'] });
+      if (!isValidObjectId(id)) return res.status(400).json({ errors: ["ID inválido"] });
 
       const client = await clientService.delete(id);
 
       if (!client)
         return res.status(404).json({
-          errors: 'Client not found',
+          errors: "Client not found"
         });
 
-      return res.status(200).json({ message: 'Client removed successfully' });
+      return res.status(200).json({ message: "Client removed successfully" });
     } catch (err: any) {
       return res.status(400).json({
-        errors: [err.message],
+        errors: [err.message]
       });
     }
   }
