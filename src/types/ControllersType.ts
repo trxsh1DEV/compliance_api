@@ -1,4 +1,4 @@
-import { Types } from 'mongoose';
+import { Types } from "mongoose";
 
 export interface ClientType {
   name: string;
@@ -7,9 +7,10 @@ export interface ClientType {
   password: string;
   avatar: string;
   id: string;
+  feedback: number;
   isAdmin: boolean;
   contact?: string;
   cnpj?: string;
   criticalProblems: boolean;
-  typeContract: 'Fixo' | 'Avulso';
+  typeContract: "Fixo" | "Avulso";
 }

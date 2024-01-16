@@ -1,11 +1,9 @@
-import { Response } from 'express';
+import { Response } from "express";
 
-export const sendErrorResponse = (
-  res: Response,
-  message: string,
-  errCode: number,
-) => {
+export const sendErrorResponse = (res: Response, message: string, errCode: number) => {
   return res.status(errCode).json({
-    errors: [message],
+    errors: [message]
   });
 };
+
+export const random = Math.floor(Math.random() * 10000 + 10000);

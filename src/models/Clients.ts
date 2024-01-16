@@ -1,5 +1,5 @@
-import { Schema, model, Document, Types, Model } from 'mongoose';
-import bcrypt from 'bcrypt';
+import { Schema, model, Document, Types, Model } from "mongoose";
+import bcrypt from "bcrypt";
 
 interface IClients extends Document {
   id: string;
@@ -8,11 +8,12 @@ interface IClients extends Document {
   email: string;
   password: string;
   avatar: string;
+  feedback: number;
   isAdmin?: boolean;
   contact?: string;
   cnpj?: string;
   criticalProblems: boolean;
-  typeContract: 'Fixo' | 'Avulso';
+  typeContract: "Fixo" | "Avulso";
   compliances: Types.ObjectId[];
 }
 
@@ -25,15 +26,15 @@ class Clients {
       {
         name: {
           type: String,
-          required: true,
+          required: true
         },
         social_reason: {
-          type: String,
+          type: String
         },
         email: {
           type: String,
           required: true,
-          unique: true,
+          unique: true
         },
         password: {
           type: String,
@@ -41,45 +42,48 @@ class Clients {
           select: false,
           validate: {
             validator: (value: string) => value.length <= 8,
-            message: 'A senha deve ter entre 8 e 30 caracteres',
-          },
+            message: "A senha deve ter entre 8 e 30 caracteres"
+          }
         },
         avatar: {
           type: String,
-          default: 'https://cdn-icons-png.flaticon.com/512/747/747376.png',
+          default: "https://cdn-icons-png.flaticon.com/512/747/747376.png"
         },
         isAdmin: {
           type: Boolean,
-          default: false,
+          default: false
         },
         contact: {
           type: String,
-          unique: true,
+          unique: true
         },
         cnpj: {
           type: String,
-          unique: true,
+          unique: true
         },
         criticalProblems: {
           type: Boolean,
-          default: false,
+          default: false
         },
         typeContract: {
           type: String,
-          enum: ['Fixo', 'Avulso'],
+          enum: ["Fixo", "Avulso"]
         },
-
+        feedback: {
+          type: Number,
+          default: 0
+        },
         compliances: [
           {
             type: Schema.Types.ObjectId,
-            ref: 'Compliance',
-          },
-        ],
+            ref: "Compliance"
+          }
+        ]
       },
-      { timestamps: true },
+      { timestamps: true }
     );
-    this.ClientsSchema.pre('save', async function (next) {
-      if (!this.isModified('password')) return next();
+    this.ClientsSchema.pre("save", async function (next) {
+      if (!this.isModified("password")) return next();
 
       try {
         this.password = await bcrypt.hash(this.password, 8);
@@ -89,7 +93,7 @@ class Clients {
       }
     });
 
-    this.ClientsModel = model<IClients>('Clients', this.ClientsSchema);
+    this.ClientsModel = model<IClients>("Clients", this.ClientsSchema);
   }
 }
 

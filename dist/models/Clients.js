@@ -10,15 +10,15 @@ class Clients {
         this.ClientsSchema = new mongoose_1.Schema({
             name: {
                 type: String,
-                required: true,
+                required: true
             },
             social_reason: {
-                type: String,
+                type: String
             },
             email: {
                 type: String,
                 required: true,
-                unique: true,
+                unique: true
             },
             password: {
                 type: String,
@@ -26,42 +26,46 @@ class Clients {
                 select: false,
                 validate: {
                     validator: (value) => value.length <= 8,
-                    message: 'A senha deve ter entre 8 e 30 caracteres',
-                },
+                    message: "A senha deve ter entre 8 e 30 caracteres"
+                }
             },
             avatar: {
                 type: String,
-                default: 'https://cdn-icons-png.flaticon.com/512/747/747376.png',
+                default: "https://cdn-icons-png.flaticon.com/512/747/747376.png"
             },
             isAdmin: {
                 type: Boolean,
-                default: false,
+                default: false
             },
             contact: {
                 type: String,
-                unique: true,
+                unique: true
             },
             cnpj: {
                 type: String,
-                unique: true,
+                unique: true
             },
             criticalProblems: {
                 type: Boolean,
-                default: false,
+                default: false
             },
             typeContract: {
                 type: String,
-                enum: ['Fixo', 'Avulso'],
+                enum: ["Fixo", "Avulso"]
+            },
+            feedback: {
+                type: Number,
+                default: 0
             },
             compliances: [
                 {
                     type: mongoose_1.Schema.Types.ObjectId,
-                    ref: 'Compliance',
-                },
-            ],
+                    ref: "Compliance"
+                }
+            ]
         }, { timestamps: true });
-        this.ClientsSchema.pre('save', async function (next) {
-            if (!this.isModified('password'))
+        this.ClientsSchema.pre("save", async function (next) {
+            if (!this.isModified("password"))
                 return next();
             try {
                 this.password = await bcrypt_1.default.hash(this.password, 8);
@@ -71,7 +75,7 @@ class Clients {
                 return next(err);
             }
         });
-        this.ClientsModel = (0, mongoose_1.model)('Clients', this.ClientsSchema);
+        this.ClientsModel = (0, mongoose_1.model)("Clients", this.ClientsSchema);
     }
 }
 exports.default = new Clients().ClientsModel;

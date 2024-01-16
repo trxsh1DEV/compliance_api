@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import clientService from "../services/clients/clientService";
 import { isValidObjectId } from "mongoose";
 import { ClientType } from "../types/ControllersType";
+import Clients from "../models/Clients";
 
 class ClientsController {
   async findAllClients(req: Request, res: Response) {
@@ -14,10 +15,15 @@ class ClientsController {
           errors: ["There are no registered users"]
         });
       }
+
+      // const clientsWithAvatarUrl = await Clients.populate(clients, {
+      //   path: "avatar",
+      //   select: "url" // Especificar os campos que você deseja incluir (neste caso, apenas 'url')
+      // });
       return res.status(200).json(clients);
     } catch (err: any) {
-      return res.status(err.response.status).json({
-        errors: [err.message]
+      return res.status(404).json({
+        errors: ["There are no registered users"]
       });
     }
   }
@@ -49,8 +55,8 @@ class ClientsController {
 
   async store(req: Request, res: Response) {
     try {
-      const { name, email, password } = req.body;
-      if (!name || !email || !password) {
+      const { name, email, password, isAdmin } = req.body;
+      if (!name || !email || !password || typeof isAdmin !== "boolean") {
         return res.status(400).json({
           errors: ["Submit all fields for registration"]
         });
@@ -83,7 +89,8 @@ class ClientsController {
       contact,
       cnpj,
       criticalProblems,
-      typeContract
+      typeContract,
+      feedback
     }: ClientType = req.body;
     let { id } = req.params;
 
@@ -102,6 +109,7 @@ class ClientsController {
       !contact &&
       !cnpj &&
       !criticalProblems &&
+      feedback <= 0 &&
       typeof isAdmin !== "boolean" &&
       typeContract !== "Fixo" &&
       typeContract !== "Avulso"
@@ -123,6 +131,7 @@ class ClientsController {
         contact,
         cnpj,
         criticalProblems,
+        feedback,
         typeContract
       };
 
@@ -134,7 +143,6 @@ class ClientsController {
       }
 
       res.status(200).json({ message: `Client updated successfully` });
-      // res.status(200).json(updatedClient);
     } catch (err: any) {
       return res.status(500).json({
         errors: [err.message]

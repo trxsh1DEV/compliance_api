@@ -1,17 +1,9 @@
-import Compliance from '../../models/Compliance';
-import { ICompliance } from '../../types/ModelTypesCompliance';
+import Compliance from "../../models/Compliance";
+import { ICompliance } from "../../types/ModelTypesCompliance";
 
 class ComplianceService {
   static async update(clientData: ICompliance, id: string) {
-    const {
-      server,
-      ha,
-      backup,
-      inventory,
-      servicesOutsourcing,
-      firewall,
-      security,
-    } = clientData;
+    const { server, ha, backup, inventory, servicesOutsourcing, firewall, security } = clientData;
 
     return await Compliance.findOneAndUpdate(
       { _id: id },
@@ -22,17 +14,13 @@ class ComplianceService {
         inventory,
         servicesOutsourcing,
         firewall,
-        security,
-      },
+        security
+      }
     );
   }
 
   static async show(id: string) {
     return await Compliance.findById(id);
-  }
-
-  static async latest() {
-    return await Compliance.findOne().sort({ createdAt: -1 });
   }
 
   static async delete(id: string) {

@@ -1,5 +1,5 @@
-import Clients from '../../models/Clients';
-import { ClientType } from '../../types/ControllersType';
+import Clients from "../../models/Clients";
+import { ClientType } from "../../types/ControllersType";
 
 class ClienteService {
   static async create(body: ClientType) {
@@ -7,7 +7,7 @@ class ClienteService {
   }
 
   static async findAll() {
-    return await Clients.find();
+    return await Clients.find().sort({ createdAt: -1 });
   }
 
   static async show(id: string) {
@@ -27,7 +27,7 @@ class ClienteService {
         criticalProblems,
         typeContract,
         cnpj,
-        contact,
+        contact
       } = clientData;
 
       return await Clients.findOneAndUpdate(
@@ -42,9 +42,9 @@ class ClienteService {
           criticalProblems,
           typeContract,
           cnpj,
-          contact,
+          contact
         },
-        { new: true },
+        { new: true }
       );
     } catch (err: any) {
       throw new Error(`Erro ao atualizar cliente: ${err.message}`);
