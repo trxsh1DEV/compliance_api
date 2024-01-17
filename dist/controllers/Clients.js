@@ -15,10 +15,6 @@ class ClientsController {
                     errors: ["There are no registered users"]
                 });
             }
-            // const clientsWithAvatarUrl = await Clients.populate(clients, {
-            //   path: "avatar",
-            //   select: "url" // Especificar os campos que você deseja incluir (neste caso, apenas 'url')
-            // });
             return res.status(200).json(clients);
         }
         catch (err) {
@@ -74,6 +70,7 @@ class ClientsController {
     }
     async update(req, res) {
         const { name, social_reason, email, password, avatar, isAdmin, contact, cnpj, criticalProblems, typeContract, feedback } = req.body;
+        console.log(req.body);
         let { id } = req.params;
         if (!id) {
             id = req.body.clientId;

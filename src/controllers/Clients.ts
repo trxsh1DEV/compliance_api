@@ -16,10 +16,6 @@ class ClientsController {
         });
       }
 
-      // const clientsWithAvatarUrl = await Clients.populate(clients, {
-      //   path: "avatar",
-      //   select: "url" // Especificar os campos que você deseja incluir (neste caso, apenas 'url')
-      // });
       return res.status(200).json(clients);
     } catch (err: any) {
       return res.status(404).json({
@@ -92,6 +88,7 @@ class ClientsController {
       typeContract,
       feedback
     }: ClientType = req.body;
+
     let { id } = req.params;
 
     if (!id) {

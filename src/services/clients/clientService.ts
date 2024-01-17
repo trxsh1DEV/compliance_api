@@ -27,6 +27,7 @@ class ClienteService {
         criticalProblems,
         typeContract,
         cnpj,
+        feedback,
         contact
       } = clientData;
 
@@ -42,6 +43,7 @@ class ClienteService {
           criticalProblems,
           typeContract,
           cnpj,
+          feedback,
           contact
         },
         { new: true }
