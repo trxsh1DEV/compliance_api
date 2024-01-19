@@ -25,7 +25,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const { id, isAdmin }: any = jwt.verify(token, process.env.TOKEN_SECRET || "");
 
     req.body.clientId = id;
-    req.body.isAdmin = isAdmin;
+    req.body.clientIsAdmin = isAdmin;
 
     // Se não for admin, verifique se está acessando seu próprio perfil || se ele n está mandando no body.data o seu próprio id do token, oq quer dizer q ele é o proprietario da conta
     if (!isAdmin) {

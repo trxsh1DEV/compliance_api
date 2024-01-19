@@ -20,7 +20,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     if (!client) sendErrorResponse(res, "Not found", 404);
 
     req.body.clientId = id;
-    req.body.isAdmin = isAdmin;
+    req.body.clientIsAdmin = isAdmin;
     return next();
   } catch (err) {
     return res.status(403).json({

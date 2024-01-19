@@ -6,7 +6,6 @@ export interface IAvatar extends Document {
   filename: string;
   clientId: Types.ObjectId;
   uploadedAt: Date;
-
   // Adicione o campo virtual à interface
   url: string;
 }

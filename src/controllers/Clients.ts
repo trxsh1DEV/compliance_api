@@ -88,6 +88,7 @@ class ClientsController {
       typeContract,
       feedback
     }: ClientType = req.body;
+    console.log(req.body);
 
     let { id } = req.params;
 
