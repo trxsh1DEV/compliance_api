@@ -1,4 +1,4 @@
-import { ICompliance } from '../../types/ModelTypesCompliance';
+import { ICompliance } from "../../types/ModelTypesCompliance";
 
 export type averageInfraType = {
   averageBkp: number;
@@ -7,7 +7,7 @@ export type averageInfraType = {
     {
       name: string;
       pointing: string;
-    },
+    }
   ];
   averageAllServers: number;
   averageFirewall: number;
@@ -17,11 +17,7 @@ export type averageInfraType = {
   totalScore: number;
 };
 
-export const postDataInfra = async (
-  average: averageInfraType,
-  infra: ICompliance,
-  id: string,
-) => {
+export const postDataInfra = async (average: averageInfraType, infra: ICompliance, id: string) => {
   if (!infra) return;
 
   infra.backup.points = average.averageBkp;
@@ -37,8 +33,6 @@ export const postDataInfra = async (
   infra.servicesOutsourcing.points = average.averageServices;
   infra.totalScore = average.totalScore;
 
-  console.log(average);
-  console.log('----------------------------------------');
   await infra.save({ validateModifiedOnly: true });
   return infra;
 };

@@ -26,23 +26,41 @@ class ComplianceController {
             const id = req.body.client || req.body.clientId;
             const client = await clientService_1.default.show(id);
             if (!client)
-                return res.status(404).json({ errors: ['Client Not Found'] });
+                return res.status(404).json({ errors: ["Client Not Found"] });
+            if (!complianceId) {
+                const getLatestCompliance = await complianceService_1.default.latest(id);
+                if (getLatestCompliance)
+                    return res.status(200).json(getLatestCompliance);
+                return res.status(200).json(infraDefault_1.infraDefault);
+            }
             for (const item of client === null || client === void 0 ? void 0 : client.compliances) {
                 if (item._id.equals(complianceId)) {
                     const compliance = await complianceService_1.default.show(complianceId);
                     if (!compliance)
-                        return res.status(404).json({ errors: ['Compliance Not Found'] });
+                        return res.status(404).json({ errors: ["Compliance Not Found"] });
                     return res.status(200).json(compliance);
                 }
             }
             return res.status(404).json({
-                errors: ['Compliance não encontrado nos (Compliances) desse cliente'],
+                errors: ["Compliance não encontrado nos (Compliances) desse cliente"]
             });
         }
         catch (err) {
             return res.status(500).json({
-                errors: [err.message],
+                errors: [err.message]
             });
+        }
+    }
+    async latestCompliance(req, res) {
+        try {
+            const id = req.body.client || req.body.clientId;
+            const getLatestCompliance = await complianceService_1.default.latest(id);
+            if (getLatestCompliance)
+                return res.status(200).json(getLatestCompliance);
+            return res.status(200).json(infraDefault_1.infraDefault);
+        }
+        catch (err) {
+            return res.status(500).json({ errors: err.message });
         }
     }
     async complianceCalculate(req, res) {
@@ -51,41 +69,22 @@ class ComplianceController {
             // Encontrar o Compliance pelo ID
             const compliance = await complianceService_1.default.show(id);
             if (!compliance) {
-                return res.status(404).json({ errors: ['Compliance não encontrado'] });
+                return res.status(404).json({ errors: ["Compliance não encontrado"] });
             }
             await (0, operations_1.calculatePointing)(compliance, id);
             return res.status(200).json(compliance);
         }
         catch (err) {
             return res.status(500).json({
-                errors: [err.message],
+                errors: [err.message]
             });
-        }
-    }
-    async latestCompliance(req, res) {
-        var _a;
-        try {
-            const id = req.body.client || req.body.clientId;
-            const client = await clientService_1.default.show(id);
-            let getLatestComplianceId = (_a = client === null || client === void 0 ? void 0 : client.compliances.pop()) === null || _a === void 0 ? void 0 : _a.toString();
-            if (getLatestComplianceId) {
-                const latestCompliance = await complianceService_1.default.show(getLatestComplianceId);
-                if (!latestCompliance) {
-                    return res.status(404).json({ errors: 'Compliance Not Found' });
-                }
-                return res.status(200).json(latestCompliance);
-            }
-            return res.status(200).json(infraDefault_1.infraDefault);
-        }
-        catch (err) {
-            return res.status(500).json({ errors: err.message });
         }
     }
     async store(req, res) {
         try {
             const client = await clientService_1.default.show(req.body.data.client);
             if (!client) {
-                return res.status(404).json({ errors: ['Client not found'] });
+                return res.status(404).json({ errors: ["Client not found"] });
             }
             const compliances = await complianceService_1.default.store(req.body.data);
             // Certifique-se de que `compliances` é uma array
@@ -107,10 +106,10 @@ class ComplianceController {
             const complianceId = req.params.id;
             const { client: id } = req.body;
             if (!(0, mongoose_1.isValidObjectId)(id) || !(0, mongoose_1.isValidObjectId)(complianceId))
-                return res.status(400).json({ errors: 'ID inválido' });
+                return res.status(400).json({ errors: "ID inválido" });
             const client = await clientService_1.default.show(id);
             if (!client)
-                return res.status(404).json({ errors: ['Cliente não encontrado'] });
+                return res.status(404).json({ errors: ["Cliente não encontrado"] });
             for (const item of client === null || client === void 0 ? void 0 : client.compliances) {
                 if (item._id.equals(complianceId)) {
                     const dataInfra = req.body;
@@ -122,22 +121,20 @@ class ComplianceController {
                         !dataInfra.inventory &&
                         !dataInfra.servicesOutsourcing) {
                         return res.status(400).json({
-                            errors: ['Submit at least one for update'],
+                            errors: ["Submit at least one for update"]
                         });
                     }
                     await complianceService_1.default.update(dataInfra, complianceId);
-                    return res
-                        .status(200)
-                        .json({ message: 'Compliance updated successfully' });
+                    return res.status(200).json({ message: "Compliance updated successfully" });
                 }
             }
             return res.status(404).json({
-                errors: ['Compliance não encontrado nos (Compliances) desse cliente'],
+                errors: ["Compliance não encontrado nos (Compliances) desse cliente"]
             });
         }
         catch (err) {
             return res.status(500).json({
-                errors: [err.message],
+                errors: [err.message]
             });
         }
     }
@@ -147,14 +144,12 @@ class ComplianceController {
             const { complianceId } = req.body;
             const client = await clientService_1.default.show(id);
             if (!client)
-                return res.status(404).json({ errors: ['Client Not Found'] });
+                return res.status(404).json({ errors: ["Client Not Found"] });
             for (const item of client === null || client === void 0 ? void 0 : client.compliances) {
                 if (item._id.equals(complianceId)) {
                     const compliance = await complianceService_1.default.show(complianceId);
                     if (!compliance)
-                        return res
-                            .status(404)
-                            .json({ errors: ['Compliance Not Found or Removed'] });
+                        return res.status(404).json({ errors: ["Compliance Not Found or Removed"] });
                     const removeIndex = client.compliances.findIndex((item) => item._id.equals(complianceId));
                     if (removeIndex !== -1) {
                         client.compliances.splice(removeIndex, 1);
@@ -164,12 +159,12 @@ class ComplianceController {
                 }
             }
             return res.status(404).json({
-                errors: ['Compliance não encontrado nos (Compliances) desse cliente'],
+                errors: ["Compliance não encontrado nos (Compliances) desse cliente"]
             });
         }
         catch (err) {
             return res.status(500).json({
-                errors: [err.message],
+                errors: [err.message]
             });
         }
     }

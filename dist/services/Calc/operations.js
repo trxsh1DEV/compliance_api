@@ -29,35 +29,30 @@ const calculatePointing = async (infra, complianceId) => {
     const averageServer = servers.map((item) => {
         return {
             name: item.serverName,
-            pointing: calculatePercentage(item.scores, item.weights),
+            pointing: calculatePercentage(item.scores, item.weights)
         };
     });
     const serverTotalScores = servers.reduce((ac, current) => ac + current.scores, 0);
     const serverTotalWeights = servers.reduce((ac, current) => ac + current.weights, 0);
     const averageAllServers = calculatePercentage(serverTotalScores, serverTotalWeights);
-    const totalScores = servers.reduce((ac, currentValue) => ac + currentValue.scores, 0) +
-        bkp.scores +
-        ha.scores +
-        firewall.scores +
-        inventory.scores +
-        security.scores +
-        services.scores;
-    const totalWeights = servers.reduce((total, item) => total + item.weights, 0) +
-        bkp.weights +
-        ha.weights +
-        firewall.weights +
-        inventory.weights +
-        security.weights +
-        services.weights;
-    if (!averageBkp &&
-        !averageHa &&
-        !averageServer &&
-        !averageFirewall &&
-        !averageInventory &&
-        !averageSecurity &&
-        !averageServices)
+    if (typeof averageBkp !== "number" &&
+        typeof averageHa !== "number" &&
+        typeof averageServer !== "number" &&
+        typeof averageFirewall !== "number" &&
+        typeof averageInventory !== "number" &&
+        typeof averageSecurity !== "number" &&
+        typeof averageServices !== "number")
         return;
-    const totalScore = parseFloat(calculatePercentage(totalScores, totalWeights));
+    const arrayAverages = [
+        averageBkp,
+        averageHa,
+        averageAllServers,
+        averageFirewall,
+        averageInventory,
+        averageSecurity,
+        averageServices
+    ];
+    const totalScore = averageTotalScore(arrayAverages);
     const averages = {
         averageBkp,
         averageHa,
@@ -67,7 +62,7 @@ const calculatePointing = async (infra, complianceId) => {
         averageInventory,
         averageSecurity,
         averageServices,
-        totalScore,
+        totalScore
     };
     try {
         const data = await (0, saveDataInfra_1.postDataInfra)(averages, infra, complianceId);
@@ -98,9 +93,9 @@ const ServersCalc = (itemsServer) => {
     let pointsAllServers = [];
     if (!enabled) {
         pointsAllServers.push({
-            serverName: '',
+            serverName: "",
             scores: 0,
-            weights: 10,
+            weights: 10
         });
     }
     for (const obj of itemsServer.servers) {
@@ -113,7 +108,7 @@ const ServersCalc = (itemsServer) => {
         pointsAllServers.push({
             serverName: obj.serverName,
             scores: totalPoints,
-            weights: maxPoints,
+            weights: maxPoints
         });
         // pointsAllServers.push({ name: obj.serverName, pointing: pointServer });
     }
@@ -135,4 +130,11 @@ const maxPointing = (...weights) => {
 const calculatePercentage = (pointingTotal, pointingMax) => {
     const porcentagem = (pointingTotal / pointingMax) * 100;
     return porcentagem.toFixed(2);
+};
+const averageTotalScore = (values) => {
+    values.map((valor) => console.log(parseFloat(valor)));
+    const valoresNumeros = values.map((valor) => parseFloat(valor));
+    const total = valoresNumeros.reduce((acc, valor) => acc + valor, 0);
+    const media = total / valoresNumeros.length;
+    return media.toFixed(2);
 };

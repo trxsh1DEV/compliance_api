@@ -17,8 +17,6 @@ const postDataInfra = async (average, infra, id) => {
     infra.security.points = average.averageSecurity;
     infra.servicesOutsourcing.points = average.averageServices;
     infra.totalScore = average.totalScore;
-    console.log(average);
-    console.log('----------------------------------------');
     await infra.save({ validateModifiedOnly: true });
     return infra;
 };
