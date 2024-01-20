@@ -55,11 +55,13 @@ class Clients {
         },
         contact: {
           type: String,
-          unique: true
+          unique: true,
+          default: ""
         },
         cnpj: {
           type: String,
-          unique: true
+          unique: true,
+          default: ""
         },
         criticalProblems: {
           type: Boolean,

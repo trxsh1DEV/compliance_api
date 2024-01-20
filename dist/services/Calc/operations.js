@@ -132,7 +132,6 @@ const calculatePercentage = (pointingTotal, pointingMax) => {
     return porcentagem.toFixed(2);
 };
 const averageTotalScore = (values) => {
-    values.map((valor) => console.log(parseFloat(valor)));
     const valoresNumeros = values.map((valor) => parseFloat(valor));
     const total = valoresNumeros.reduce((acc, valor) => acc + valor, 0);
     const media = total / valoresNumeros.length;

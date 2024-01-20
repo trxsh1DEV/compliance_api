@@ -5,6 +5,7 @@ import clientsRoutes from "./src/routes/clients";
 import authRoutes from "./src/routes/auth";
 import commomUsersRoutes from "./src/routes/commomUser";
 import avatarRoutes from "./src/routes/avatar";
+import featuresRoutes from "./src/routes/features";
 import helmet from "helmet";
 import { resolve } from "path";
 
@@ -37,6 +38,7 @@ class App {
     this.app.use("/admin/clients/", clientsRoutes);
     this.app.use("/user/", commomUsersRoutes);
     this.app.use("/images/", avatarRoutes);
+    this.app.use("/features/", featuresRoutes);
   }
 }
 

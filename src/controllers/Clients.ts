@@ -4,6 +4,7 @@ import clientService from "../services/clients/clientService";
 import { isValidObjectId } from "mongoose";
 import { ClientType } from "../types/ControllersType";
 import Clients from "../models/Clients";
+import axios from "axios";
 
 class ClientsController {
   async findAllClients(req: Request, res: Response) {

@@ -187,10 +187,9 @@ const calculatePercentage = (pointingTotal: number, pointingMax: number) => {
 };
 
 const averageTotalScore = (values: string[]) => {
-  values.map((valor: any) => console.log(parseFloat(valor)));
-  const valoresNumeros = values.map((valor: any) => parseFloat(valor));
+  const valoresNumeros = values.map((valor: string) => parseFloat(valor));
 
-  const total = valoresNumeros.reduce((acc: any, valor: any) => acc + valor, 0);
+  const total = valoresNumeros.reduce((acc: number, valor: number) => acc + valor, 0);
   const media = total / valoresNumeros.length;
 
   return media.toFixed(2);
