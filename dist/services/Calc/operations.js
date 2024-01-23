@@ -32,39 +32,40 @@ const calculatePointing = async (infra, complianceId) => {
             pointing: calculatePercentage(item.scores, item.weights)
         };
     });
-    const serverTotalScores = servers.reduce((ac, current) => ac + current.scores, 0);
-    const serverTotalWeights = servers.reduce((ac, current) => ac + current.weights, 0);
-    const averageAllServers = calculatePercentage(serverTotalScores, serverTotalWeights);
-    if (typeof averageBkp !== "number" &&
-        typeof averageHa !== "number" &&
-        typeof averageServer !== "number" &&
-        typeof averageFirewall !== "number" &&
-        typeof averageInventory !== "number" &&
-        typeof averageSecurity !== "number" &&
-        typeof averageServices !== "number")
-        return;
-    const arrayAverages = [
-        averageBkp,
-        averageHa,
-        averageAllServers,
-        averageFirewall,
-        averageInventory,
-        averageSecurity,
-        averageServices
-    ];
-    const totalScore = averageTotalScore(arrayAverages);
-    const averages = {
-        averageBkp,
-        averageHa,
-        averageServer,
-        averageAllServers,
-        averageFirewall,
-        averageInventory,
-        averageSecurity,
-        averageServices,
-        totalScore
-    };
     try {
+        const serverTotalScores = servers.reduce((ac, current) => ac + current.scores, 0);
+        const serverTotalWeights = servers.reduce((ac, current) => ac + current.weights, 0);
+        const averageAllServers = calculatePercentage(serverTotalScores, serverTotalWeights);
+        if (typeof averageBkp !== "string" &&
+            typeof averageHa !== "string" &&
+            typeof averageAllServers !== "string" &&
+            typeof averageFirewall !== "string" &&
+            typeof averageInventory !== "string" &&
+            typeof averageSecurity !== "string" &&
+            typeof averageServices !== "string") {
+            throw new Error("Erro em uma das médias/score dos campos");
+        }
+        const arrayAverages = [
+            averageBkp,
+            averageHa,
+            averageAllServers,
+            averageFirewall,
+            averageInventory,
+            averageSecurity,
+            averageServices
+        ];
+        const totalScore = averageTotalScore(arrayAverages);
+        const averages = {
+            averageBkp: Number(averageBkp),
+            averageHa: Number(averageHa),
+            averageServer,
+            averageAllServers: Number(averageAllServers),
+            averageFirewall: Number(averageFirewall),
+            averageInventory: Number(averageInventory),
+            averageSecurity: Number(averageInventory),
+            averageServices: Number(averageServices),
+            totalScore: Number(totalScore)
+        };
         const data = await (0, saveDataInfra_1.postDataInfra)(averages, infra, complianceId);
         // console.log(data);
         return data;

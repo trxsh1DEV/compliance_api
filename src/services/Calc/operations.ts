@@ -1,31 +1,12 @@
 import { IBackupItems, ICompliance, IServers } from "../../types/ModelTypesCompliance";
+import {
+  GenericInfraServerType,
+  TypeAllServers,
+  TypesFieldsDefaultCalc,
+  averageInfraType
+} from "../../types/TypesCalculate";
 import { GenericType } from "../../types/TypesVariableCompliance";
 import { postDataInfra } from "../data/saveDataInfra";
-
-interface GenericInfraServerType extends GenericType {
-  serverName: string;
-}
-
-interface TypeAllServers {
-  serverName: string;
-  scores: number;
-  weights: number;
-}
-
-type averageInfraType = {
-  averageBkp: number | string;
-  averageHa: number | string;
-  averageServer: {
-    name: string;
-    pointing: string | number;
-  }[];
-  averageAllServers: number | string;
-  averageFirewall: number | string;
-  averageInventory: number | string;
-  averageSecurity: number | string;
-  averageServices: number | string;
-  totalScore: number;
-};
 
 export const calculatePointing = async (infra: ICompliance, complianceId: string) => {
   const serverArray = [infra.server];
@@ -60,45 +41,46 @@ export const calculatePointing = async (infra: ICompliance, complianceId: string
     };
   });
 
-  const serverTotalScores = servers.reduce((ac, current) => ac + current.scores, 0);
-  const serverTotalWeights = servers.reduce((ac, current) => ac + current.weights, 0);
-  const averageAllServers = calculatePercentage(serverTotalScores, serverTotalWeights);
-
-  if (
-    typeof averageBkp !== "number" &&
-    typeof averageHa !== "number" &&
-    typeof averageServer !== "number" &&
-    typeof averageFirewall !== "number" &&
-    typeof averageInventory !== "number" &&
-    typeof averageSecurity !== "number" &&
-    typeof averageServices !== "number"
-  )
-    return;
-
-  const arrayAverages = [
-    averageBkp,
-    averageHa,
-    averageAllServers,
-    averageFirewall,
-    averageInventory,
-    averageSecurity,
-    averageServices
-  ];
-  const totalScore = averageTotalScore(arrayAverages);
-
-  const averages: averageInfraType | any = {
-    averageBkp,
-    averageHa,
-    averageServer,
-    averageAllServers,
-    averageFirewall,
-    averageInventory,
-    averageSecurity,
-    averageServices,
-    totalScore
-  };
-
   try {
+    const serverTotalScores = servers.reduce((ac, current) => ac + current.scores, 0);
+    const serverTotalWeights = servers.reduce((ac, current) => ac + current.weights, 0);
+    const averageAllServers = calculatePercentage(serverTotalScores, serverTotalWeights);
+
+    if (
+      typeof averageBkp !== "string" &&
+      typeof averageHa !== "string" &&
+      typeof averageAllServers !== "string" &&
+      typeof averageFirewall !== "string" &&
+      typeof averageInventory !== "string" &&
+      typeof averageSecurity !== "string" &&
+      typeof averageServices !== "string"
+    ) {
+      throw new Error("Erro em uma das médias/score dos campos");
+    }
+
+    const arrayAverages = [
+      averageBkp,
+      averageHa,
+      averageAllServers,
+      averageFirewall,
+      averageInventory,
+      averageSecurity,
+      averageServices
+    ];
+    const totalScore = averageTotalScore(arrayAverages);
+
+    const averages: averageInfraType = {
+      averageBkp: Number(averageBkp),
+      averageHa: Number(averageHa),
+      averageServer,
+      averageAllServers: Number(averageAllServers),
+      averageFirewall: Number(averageFirewall),
+      averageInventory: Number(averageInventory),
+      averageSecurity: Number(averageInventory),
+      averageServices: Number(averageServices),
+      totalScore: Number(totalScore)
+    };
+
     const data = await postDataInfra(averages, infra, complianceId);
     // console.log(data);
     return data;
@@ -164,7 +146,7 @@ const ServersCalc = (itemsServer: IServers): TypeAllServers[] => {
   return pointsAllServers;
 };
 
-const defaultCalc = (infraObj: any) => {
+const defaultCalc = (infraObj: TypesFieldsDefaultCalc) => {
   const totalPoints = pointTotalCalc(infraObj.score * infraObj.weight);
   const maxPoints = maxPointing(infraObj.weight);
 

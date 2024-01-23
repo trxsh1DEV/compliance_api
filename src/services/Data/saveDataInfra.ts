@@ -1,21 +1,5 @@
 import { ICompliance } from "../../types/ModelTypesCompliance";
-
-export type averageInfraType = {
-  averageBkp: number;
-  averageHa: number;
-  averageServer: [
-    {
-      name: string;
-      pointing: string;
-    }
-  ];
-  averageAllServers: number;
-  averageFirewall: number;
-  averageInventory: number;
-  averageSecurity: number;
-  averageServices: number;
-  totalScore: number;
-};
+import { averageInfraType } from "../../types/TypesCalculate";
 
 export const postDataInfra = async (average: averageInfraType, infra: ICompliance, id: string) => {
   if (!infra) return;
