@@ -14,6 +14,12 @@ interface IClients extends Document {
   cnpj?: string;
   criticalProblems: boolean;
   typeContract: "Fixo" | "Avulso";
+  urls: {
+    url_inventory: string;
+    url_tickets: string;
+    url_runbook: string;
+    url_kickoff: string;
+  };
   compliances: Types.ObjectId[];
 }
 
@@ -70,6 +76,14 @@ class Clients {
         typeContract: {
           type: String,
           enum: ["Fixo", "Avulso"]
+        },
+        urls: {
+          type: {
+            url_inventory: String,
+            url_runbook: String,
+            url_tickets: String,
+            url_kickoff: String
+          }
         },
         feedback: {
           type: Number,

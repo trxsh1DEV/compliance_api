@@ -14,7 +14,7 @@ class AuthController {
       if (!client || typeof client.isAdmin !== "boolean") {
         return res.status(404).json({ errors: ["Wrong credentials"] });
       }
-      const token = generateToken(client.id, client.isAdmin);
+      const token = await generateToken(client.id, client.isAdmin);
 
       return res.status(200).json({ token });
     } catch (err: any) {

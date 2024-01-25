@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import ClienteService from "../services/clients/clientService";
+import fs from "fs/promises";
 import { isValidObjectId } from "mongoose";
 import { sendErrorResponse } from "../services/utilities";
 
@@ -22,7 +22,15 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   const [, token] = authorization.split(" ");
 
   try {
-    const { id, isAdmin }: any = jwt.verify(token, process.env.TOKEN_SECRET || "");
+    const keyPath = process.env.TOKEN_SECRET_KEY;
+
+    if (!keyPath) {
+      throw new Error("Caminho da chave não especificado no ambiente.");
+    }
+
+    const keyPrivatePEM = await fs.readFile(keyPath, "utf-8");
+
+    const { id, isAdmin }: any = jwt.verify(token, keyPrivatePEM);
 
     req.body.clientId = id;
     req.body.clientIsAdmin = isAdmin;

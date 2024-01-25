@@ -1,5 +1,5 @@
-import { model, Schema, Model, SchemaDefinition } from 'mongoose';
-import { ICompliance } from '../types/ModelTypesCompliance';
+import { model, Schema, Model, SchemaDefinition } from "mongoose";
+import { ICompliance } from "../types/ModelTypesCompliance";
 
 // enum WeightValue {
 //   MIN = 1,
@@ -15,52 +15,53 @@ class Compliance {
       {
         client: {
           type: Schema.Types.ObjectId,
-          ref: 'Client',
-          required: true,
+          ref: "Client",
+          required: true
         },
-        backup: {
-          frequency: this.createFrequencySchema(),
-          restoration: this.createRestorationSchema(),
-          policy: this.createPolicySchema(),
-          storage: {
-            local: this.createStorageSchema(),
-            remote: this.createStorageSchema(),
-          },
-          weight: this.weightTemplate(9),
-          ...this.templateObjectFather(),
-        },
+        backup: this.createBackupSchema(),
         server: this.createServersSchema(),
         ha: this.createHASchema(),
         firewall: this.createFirewall(),
         inventory: this.createInventory(),
         security: this.createSecurity(),
         servicesOutsourcing: this.createServices(),
-        totalScore: this.pointingTemplate(),
+        totalScore: this.pointingTemplate()
       },
-      { timestamps: true },
+      { timestamps: true }
     );
 
-    this.ComplianceModel = model<ICompliance>(
-      'Compliance',
-      this.ComplianceSchema,
-    );
+    this.ComplianceModel = model<ICompliance>("Compliance", this.ComplianceSchema);
   }
 
+  createBackupSchema(): SchemaDefinition {
+    return {
+      enabled: this.isEnable(),
+      frequency: this.createFrequencySchema(),
+      restoration: this.createRestorationSchema(),
+      policy: this.createPolicySchema(),
+      storage: {
+        local: this.createStorageSchema(),
+        remote: this.createStorageSchema()
+      },
+      weight: this.weightTemplate(9),
+      ...this.templateObjectFather()
+    };
+  }
   // Funções de criação de esquemas tipadas
   createPolicySchema(): SchemaDefinition {
     return {
       enabled: this.isEnable(),
       score: this.scoreTemplate(),
-      weight: this.weightTemplate(6),
+      weight: this.weightTemplate(6)
     };
   }
 
   createFrequencySchema(): SchemaDefinition {
     return {
       enabled: this.isEnable(),
-      level: { type: String, enum: ['low', 'medium', 'high'] },
+      level: { type: String, enum: ["low", "medium", "high"] },
       score: this.scoreTemplate(),
-      weight: this.weightTemplate(8),
+      weight: this.weightTemplate(8)
     };
   }
 
@@ -69,7 +70,7 @@ class Compliance {
       enabled: this.isEnable(),
       qtde: { type: Number, default: 0 },
       score: this.scoreTemplate(),
-      weight: this.weightTemplate(9),
+      weight: this.weightTemplate(9)
     };
   }
 
@@ -77,7 +78,7 @@ class Compliance {
     return {
       enabled: this.isEnable(),
       score: this.scoreTemplate(),
-      weight: this.weightTemplate(9),
+      weight: this.weightTemplate(9)
     };
   }
 
@@ -92,19 +93,19 @@ class Compliance {
           config: this.createConfigServerSchema(),
           monitoringPerformance: this.createMonitoringServer(),
           weight: this.weightTemplate(8),
-          ...this.templateDefault(),
-        },
+          ...this.templateDefault()
+        }
       ],
       weight: this.weightTemplate(8),
-      ...this.templateObjectFather(),
+      ...this.templateObjectFather()
     };
   }
 
   createConfigServerSchema(): SchemaDefinition {
     return {
-      level: { type: String, enum: ['low', 'medium', 'high'] },
+      level: { type: String, enum: ["low", "medium", "high"] },
       score: this.scoreTemplate(),
-      weight: this.weightTemplate(7),
+      weight: this.weightTemplate(7)
     };
   }
 
@@ -112,7 +113,7 @@ class Compliance {
     return {
       enabled: this.isEnable(),
       score: this.scoreTemplate(),
-      weight: this.weightTemplate(7),
+      weight: this.weightTemplate(7)
     };
   }
 
@@ -120,10 +121,10 @@ class Compliance {
     return {
       patching: {
         type: String,
-        enum: ['Regular', 'Irregular'],
+        enum: ["Regular", "Irregular"]
       },
       score: this.scoreTemplate(),
-      weight: this.weightTemplate(3),
+      weight: this.weightTemplate(3)
     };
   }
   // Servers
@@ -134,20 +135,19 @@ class Compliance {
       enabled: this.isEnable(),
       solutions: {
         type: [String],
-        enum: ['redundancy', 'load balance', 'failover', 'cluster', 'none'],
-        default: ['none'],
+        enum: ["redundancy", "load balance", "failover", "cluster", "none"],
+        default: ["none"]
       },
       tested: this.isEnable(),
       rto: {
         type: Number,
         validate: {
           validator: (value: number) => value >= 0,
-          message:
-            'O tempo deve ser um numero que será convertido em horas e não deve ser um numero negativo',
-        },
+          message: "O tempo deve ser um numero que será convertido em horas e não deve ser um numero negativo"
+        }
       },
       weight: this.weightTemplate(7),
-      ...this.templateDefault(),
+      ...this.templateDefault()
     };
   }
 
@@ -159,25 +159,17 @@ class Compliance {
       enabled: this.isEnable(),
       manufacturer: {
         type: [String],
-        enum: [
-          'Sophos',
-          'Fortigate',
-          'Mikrotik',
-          'Cisco',
-          'SonicWall',
-          'PFsense',
-          'None',
-        ],
+        enum: ["Sophos", "Fortigate", "Mikrotik", "Cisco", "SonicWall", "PFsense", "None"]
       },
-      rules: { type: String, enum: ['Fraco', 'Ok', 'Bom', 'None'] },
+      rules: { type: String, enum: ["Fraco", "Ok", "Bom", "None"] },
       segmentation: this.booleanDefault(),
-      vpn: { type: String, enum: ['Fraco', 'Ok', 'Bom', 'None'] },
+      vpn: { type: String, enum: ["Fraco", "Ok", "Bom", "None"] },
       ips: this.booleanDefault(),
       backup: this.booleanDefault(),
       restoration: this.booleanDefault(),
       monitoring: this.booleanDefault(),
       weight: this.weightTemplate(9),
-      ...this.templateDefault(),
+      ...this.templateDefault()
     };
   }
 
@@ -187,23 +179,16 @@ class Compliance {
       enabled: this.isEnable(),
       devices: {
         type: [String],
-        enum: [
-          'Computadores',
-          'Notebooks',
-          'Servidores',
-          'Impressoras',
-          'Equipamentos',
-          'Nenhum',
-        ],
+        enum: ["Computadores", "Notebooks", "Servidores", "Impressoras", "Equipamentos", "Nenhum"]
       },
       contacts: { type: Boolean, default: false },
       agentInventory: {
         type: String,
-        enum: ['None', 'Few', 'Medium', 'Many', 'All'],
-        default: 'None',
+        enum: ["None", "Few", "Medium", "Many", "All"],
+        default: "None"
       },
       weight: this.weightTemplate(7),
-      ...this.templateDefault(),
+      ...this.templateDefault()
     };
   }
 
@@ -211,19 +196,19 @@ class Compliance {
     return {
       antivirus: {
         type: String,
-        enum: ['None', 'Few', 'Medium', 'Many', 'All'],
-        default: 'None',
+        enum: ["None", "Few", "Medium", "Many", "All"],
+        default: "None"
       },
       policyPassword: this.booleanDefault(),
       accessAuditing: this.booleanDefault(),
       gpo: {
         type: String,
-        enum: ['Nenhuma', 'Basica', 'Avançada'],
-        default: 'Nenhuma',
+        enum: ["Nenhuma", "Basica", "Avançada"],
+        default: "Nenhuma"
       },
       lgpd: this.booleanDefault(),
       weight: this.weightTemplate(8),
-      ...this.templateDefault(),
+      ...this.templateDefault()
     };
   }
 
@@ -237,7 +222,7 @@ class Compliance {
       database: this.booleanDefault(),
       servers: this.booleanDefault(),
       weight: this.weightTemplate(6),
-      ...this.templateDefault(),
+      ...this.templateDefault()
     };
   }
 
@@ -247,46 +232,46 @@ class Compliance {
       type: Number,
       enum: [...Array(11).keys()],
       required: true,
-      default: 0,
+      default: 0
     };
   }
   weightTemplate(numb: number) {
     return {
       type: Number,
-      default: Math.max(1, Math.min(10, numb)),
+      default: Math.max(1, Math.min(10, numb))
     };
   }
   isEnable() {
     return {
       type: Boolean,
       required: true,
-      default: false,
+      default: false
     };
   }
   booleanDefault() {
     return {
       type: Boolean,
       required: true,
-      default: false,
+      default: false
     };
   }
   pointingTemplate() {
     return {
       type: Number,
-      default: 0,
+      default: 0
     };
   }
   templateDefault(description: boolean = false) {
     return {
       score: this.scoreTemplate(),
       description: { type: String, required: false },
-      points: this.pointingTemplate(),
+      points: this.pointingTemplate()
     };
   }
   templateObjectFather(description: boolean = false) {
     return {
       description: { type: String, required: description },
-      points: this.pointingTemplate(),
+      points: this.pointingTemplate()
     };
   }
 }

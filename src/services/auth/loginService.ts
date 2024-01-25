@@ -1,11 +1,34 @@
 import Clients from "../../models/Clients";
 import jwt from "jsonwebtoken";
+import fs from "fs/promises";
 
-const loginService = async (email: string) => await Clients.findOne({ email: email }).select("+password");
+const loginService = async (email: string) => {
+  try {
+    return Clients.findOne({ email: email }).select("+password");
+  } catch (err: any) {
+    console.error("Erro durante a consulta ao banco de dados:", err.message);
+    throw err;
+  }
+};
 
-const generateToken = (id: string, isAdmin: boolean) =>
-  jwt.sign({ id, isAdmin }, process.env.TOKEN_SECRET || "0b5e57cb787c23d243864885e13b113c", {
-    expiresIn: process.env.TOKEN_EXPIRATION
-  });
+const generateToken = async (id: string, isAdmin: boolean) => {
+  try {
+    const keyPath = process.env.TOKEN_SECRET_KEY;
+
+    if (!keyPath) {
+      throw new Error("Caminho da chave não especificado no ambiente.");
+    }
+
+    const keyPrivatePEM = await fs.readFile(keyPath, "utf-8");
+
+    return jwt.sign({ id, isAdmin }, keyPrivatePEM, {
+      expiresIn: process.env.TOKEN_EXPIRATION
+    });
+  } catch (err: any) {
+    console.error("Erro ao gerar o token:", err.message);
+    throw err;
+  }
+};
+// console.log(generateToken);
 
 export { loginService, generateToken };

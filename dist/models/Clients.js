@@ -55,6 +55,14 @@ class Clients {
                 type: String,
                 enum: ["Fixo", "Avulso"]
             },
+            urls: {
+                type: {
+                    url_inventory: String,
+                    url_runbook: String,
+                    url_tickets: String,
+                    url_kickoff: String
+                }
+            },
             feedback: {
                 type: Number,
                 default: 0
