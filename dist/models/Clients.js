@@ -23,11 +23,11 @@ class Clients {
             password: {
                 type: String,
                 required: true,
-                select: false,
-                validate: {
-                    validator: (value) => value.length <= 8,
-                    message: "A senha deve ter entre 8 e 30 caracteres"
-                }
+                select: false
+                // validate: {
+                //   validator: (value: string) => value.length < 8 && value.length > 30,
+                //   message: "A senha deve ter entre 8 e 30 caracteres"
+                // }
             },
             avatar: {
                 type: String,
@@ -39,12 +39,10 @@ class Clients {
             },
             contact: {
                 type: String,
-                unique: true,
                 default: ""
             },
             cnpj: {
                 type: String,
-                unique: true,
                 default: ""
             },
             criticalProblems: {

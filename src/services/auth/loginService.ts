@@ -22,6 +22,7 @@ const generateToken = async (id: string, isAdmin: boolean) => {
     const keyPrivatePEM = await fs.readFile(keyPath, "utf-8");
 
     return jwt.sign({ id, isAdmin }, keyPrivatePEM, {
+      algorithm: "RS256",
       expiresIn: process.env.TOKEN_EXPIRATION
     });
   } catch (err: any) {
@@ -29,6 +30,5 @@ const generateToken = async (id: string, isAdmin: boolean) => {
     throw err;
   }
 };
-// console.log(generateToken);
 
 export { loginService, generateToken };
