@@ -4,10 +4,10 @@ import fs from "fs/promises";
 
 const loginService = async (email: string) => {
   try {
-    return Clients.findOne({ email: email }).select("+password");
+    return Clients.findOne({ email: email });
   } catch (err: any) {
     console.error("Erro durante a consulta ao banco de dados:", err.message);
-    throw err;
+    throw err.message;
   }
 };
 

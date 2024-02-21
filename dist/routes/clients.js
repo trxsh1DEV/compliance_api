@@ -5,11 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const Clients_1 = __importDefault(require("../controllers/Clients"));
-const authAdmin_1 = __importDefault(require("../middlewares/authAdmin"));
+const middlewareAuth_1 = __importDefault(require("../middlewares/middlewareAuth"));
+const keycloak_1 = __importDefault(require("../config/keycloak"));
 const router = (0, express_1.Router)();
-router.post("/", authAdmin_1.default, Clients_1.default.store);
-router.get("", authAdmin_1.default, Clients_1.default.findAllClients);
-router.get("/:id", authAdmin_1.default, Clients_1.default.show);
-router.patch("/:id", authAdmin_1.default, Clients_1.default.update);
-router.delete("/:id", authAdmin_1.default, Clients_1.default.delete);
+router.post("/", keycloak_1.default.protect("realm:app-admin"), middlewareAuth_1.default, Clients_1.default.store);
+router.get("", keycloak_1.default.protect("realm:app-admin"), middlewareAuth_1.default, Clients_1.default.findAllClients);
+router.get("/:id", keycloak_1.default.protect("realm:app-admin"), middlewareAuth_1.default, Clients_1.default.show);
+router.patch("/:id", keycloak_1.default.protect("realm:app-admin"), middlewareAuth_1.default, Clients_1.default.update);
+router.delete("/:id", keycloak_1.default.protect("realm:app-admin"), middlewareAuth_1.default, Clients_1.default.delete);
 exports.default = router;

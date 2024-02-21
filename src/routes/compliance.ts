@@ -1,15 +1,15 @@
 import { Router } from "express";
 import Compliance from "../controllers/Compliance";
-import authAdmin from "../middlewares/authAdmin";
-import loginRequired from "../middlewares/loginRequired";
+import middlewareAuth from "../middlewares/middlewareAuth";
+import keycloak from "../config/keycloak";
 
 const router = Router();
 
-router.post("/", authAdmin, Compliance.store);
-router.post("/latest/", loginRequired, Compliance.latestCompliance);
-router.get("/calculate/:id", authAdmin, Compliance.complianceCalculate);
-router.get("/:complianceId", authAdmin, Compliance.show);
-router.patch("/:id", authAdmin, Compliance.update);
-router.delete("/:id", authAdmin, Compliance.delete);
+router.post("/", keycloak.protect("realm:app-admin"), middlewareAuth, Compliance.store);
+router.post("/latest/", keycloak.protect("realm:app-user"), middlewareAuth, Compliance.latestCompliance);
+router.get("/calculate/:id", keycloak.protect("realm:app-admin"), middlewareAuth, Compliance.complianceCalculate);
+router.get("/:complianceId", keycloak.protect("realm:app-admin"), middlewareAuth, Compliance.show);
+router.patch("/:id", keycloak.protect("realm:app-admin"), middlewareAuth, Compliance.update);
+router.delete("/:id", keycloak.protect("realm:app-admin"), middlewareAuth, Compliance.delete);
 
 export default router;

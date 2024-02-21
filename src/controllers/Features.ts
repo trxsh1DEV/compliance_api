@@ -4,7 +4,7 @@ import ClienteService from "../services/clients/clientService";
 import { filterRegexUppercaseAndSpaces } from "../utils/regex";
 
 class Features {
-  async snapshots(req: Request, res: Response) {
+  async dashboards(req: Request, res: Response) {
     try {
       // Criar as credenciais codificadas em base64
       const credentials = btoa(`${process.env.LOGIN_GRAFANA}:${process.env.PASSWORD_GRAFANA}`);
@@ -16,8 +16,7 @@ class Features {
           "Content-Type": "application/json"
         }
       };
-
-      const snapshots = await axios.get(process.env.URL_GRAFANA || "", options);
+      const dashboards = await axios.get(`${process.env.URL_GRAFANA}/api/dashboards/public-dashboards`, options);
 
       // Pegando somente o dominio de um e-mail, ex: user@domain.com, obtenho só o "domain"
       const domainMatch = (user?.email?.match(/@([^.]+)\./)?.[1] || "").trim();
@@ -25,11 +24,17 @@ class Features {
 
       const regex = filterRegexUppercaseAndSpaces(domainMatch);
 
-      const resultadoFiltrado = snapshots.data.filter((item: any) => regex.test(item.name));
+      const resultFilter = dashboards.data.publicDashboards.filter((item: any) => regex.test(item.title));
 
-      if (resultadoFiltrado.length === 0) return res.status(404).json("No Dashboards found in Grafana");
+      if (resultFilter.length === 0) return res.status(404).json("No Dashboards found in Grafana");
+      // const idDashboards = resultFilter.map((item: any) => {
+      //   return {
+      //     id: item.accessToken,
+      //     title: item.title
+      //   };
+      // });
 
-      return res.json(resultadoFiltrado[0].externalUrl);
+      return res.json(resultFilter);
     } catch (err: any) {
       return res.status(500).json({
         errors: [err.message]

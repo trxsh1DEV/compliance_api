@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
-// import Compliance from '../models/Compliance';
 import clientService from "../services/clients/clientService";
 import { isValidObjectId } from "mongoose";
 import { ClientType } from "../types/ControllersType";
-import Clients from "../models/Clients";
-import axios from "axios";
 
 class ClientsController {
   async findAllClients(req: Request, res: Response) {
@@ -30,8 +27,8 @@ class ClientsController {
       let { id } = req.params;
 
       if (!id) {
-        // Aqui estou pegando o id q está no token e eu seto somente no middleware
-        id = req.body.clientId;
+        // Aqui estou pegando o id q está no token e eu seto somente no middlewareAuth
+        id = req.locals.clientId;
       }
 
       if (!isValidObjectId(id)) return res.status(400).json({ errors: "ID inválido" });
@@ -89,12 +86,11 @@ class ClientsController {
       typeContract,
       feedback
     }: ClientType = req.body;
-    console.log(req.body);
 
     let { id } = req.params;
 
     if (!id) {
-      id = req.body.clientId;
+      id = req.locals.clientId;
     }
 
     if (!isValidObjectId(id)) return res.status(400).json({ errors: "ID inválido" });

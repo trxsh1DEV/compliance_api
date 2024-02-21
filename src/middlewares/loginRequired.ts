@@ -32,7 +32,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     req.body.clientIsAdmin = isAdmin;
     return next();
   } catch (err) {
-    return res.status(403).json({
+    return res.status(401).json({
       errors: ["Token expired or invalid"]
     });
   }

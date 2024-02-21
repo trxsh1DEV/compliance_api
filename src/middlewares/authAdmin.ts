@@ -37,11 +37,11 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     // Se não for admin, verifique se está acessando seu próprio perfil || se ele n está mandando no body.data o seu próprio id do token, oq quer dizer q ele é o proprietario da conta
     if (!isAdmin) {
-      return sendErrorResponse(res, "Unauthorized", 401);
+      return sendErrorResponse(res, "Unauthorized", 403);
     }
 
     return next();
   } catch (err) {
-    return sendErrorResponse(res, "Token invalid or Expired", 403);
+    return sendErrorResponse(res, "Token invalid or Expired", 401);
   }
 };

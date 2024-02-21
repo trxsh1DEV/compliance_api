@@ -10,6 +10,10 @@ class ClienteService {
     return await Clients.find().sort({ createdAt: -1 });
   }
 
+  static async getUserEmail(email: string) {
+    return await Clients.findOne({ email: email });
+  }
+
   static async show(id: string) {
     return await Clients.findById(id);
   }

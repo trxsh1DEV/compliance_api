@@ -23,11 +23,11 @@ class Clients {
             password: {
                 type: String,
                 required: true,
-                select: false
-                // validate: {
-                //   validator: (value: string) => value.length < 8 && value.length > 30,
-                //   message: "A senha deve ter entre 8 e 30 caracteres"
-                // }
+                select: false,
+                validate: {
+                    validator: (value) => value.length >= 8 && value.length <= 30,
+                    message: "A senha deve ter entre 8 e 30 caracteres"
+                }
             },
             avatar: {
                 type: String,
@@ -38,12 +38,10 @@ class Clients {
                 default: false
             },
             contact: {
-                type: String,
-                default: ""
+                type: String
             },
             cnpj: {
-                type: String,
-                default: ""
+                type: String
             },
             criticalProblems: {
                 type: Boolean,
@@ -58,7 +56,8 @@ class Clients {
                     url_inventory: String,
                     url_runbook: String,
                     url_tickets: String,
-                    url_kickoff: String
+                    url_kickoff: String,
+                    url_grafana: String
                 }
             },
             feedback: {

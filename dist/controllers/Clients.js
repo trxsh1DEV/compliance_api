@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// import Compliance from '../models/Compliance';
 const clientService_1 = __importDefault(require("../services/clients/clientService"));
 const mongoose_1 = require("mongoose");
 class ClientsController {
@@ -27,8 +26,8 @@ class ClientsController {
         try {
             let { id } = req.params;
             if (!id) {
-                // Aqui estou pegando o id q está no token e eu seto somente no middleware
-                id = req.body.clientId;
+                // Aqui estou pegando o id q está no token e eu seto somente no middlewareAuth
+                id = req.locals.clientId;
             }
             if (!(0, mongoose_1.isValidObjectId)(id))
                 return res.status(400).json({ errors: "ID inválido" });
@@ -70,10 +69,9 @@ class ClientsController {
     }
     async update(req, res) {
         const { name, social_reason, email, password, avatar, isAdmin, contact, cnpj, criticalProblems, typeContract, feedback } = req.body;
-        console.log(req.body);
         let { id } = req.params;
         if (!id) {
-            id = req.body.clientId;
+            id = req.locals.clientId;
         }
         if (!(0, mongoose_1.isValidObjectId)(id))
             return res.status(400).json({ errors: "ID inválido" });
