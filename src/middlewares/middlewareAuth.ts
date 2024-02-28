@@ -32,7 +32,10 @@ import ClientService from "../services/clients/clientService";
 export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     // @ts-ignore
-    const tokenDataUser = req.kauth.grant.access_token.content || req.headers?.authorization?.split(" ")[1];
+    // console.log("oi", req?.kauth);
+    // @ts-ignore
+    const tokenDataUser = req?.kauth?.grant?.access_token?.content || req.headers?.authorization?.split(" ")[1];
+
     if (!tokenDataUser) {
       return sendErrorResponse(res, "Login required", 401);
     }
@@ -40,7 +43,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const client = (await ClientService.getUserEmail(email)) || "";
     if (!client) return sendErrorResponse(res, "Not Found", 404);
 
-    // console.log(req.kauth.grant.access_token.token == req.headers?.authorization?.split(" ")[1]);
     // @ts-ignore
     req.locals = {
       clientId: client.id,

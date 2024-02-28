@@ -1,6 +1,6 @@
 import express, { Application } from "express";
 import cors from "cors";
-import helmet from "helmet";
+// import helmet from "helmet";
 import { resolve } from "path";
 import session from "express-session";
 // Routes
@@ -11,6 +11,11 @@ import commomUsersRoutes from "./src/routes/commomUser";
 import avatarRoutes from "./src/routes/avatar";
 import featuresRoutes from "./src/routes/features";
 import keycloak, { memoryStore } from "./src/config/keycloak";
+
+// const chainFilePath = resolve(__dirname, "..", "config", "intermediate.pem");
+// process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
+
+// process.env["NODE_EXTRA_CA_CERTS"] = chainFilePath;
 
 class App {
   public app: Application;
@@ -23,13 +28,13 @@ class App {
 
   private middlewares(): void {
     const corsOptions = {
-      origin: ["http://localhost:5173", "http://179.213.2.192"],
+      origin: ["http://localhost:5173", "http://179.213.2.192", "https://portalcliente.infonova.com.br"],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       allowedHeaders: "Content-Type,Authorization",
       optionsSuccessStatus: 204
     };
     this.app.use(cors(corsOptions)); // Coloque antes do express.json() e express.urlencoded()
-    this.app.use(helmet());
+    // this.app.use(helmet());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
     this.app.use(express.static(resolve(__dirname, "uploads")));

@@ -55,9 +55,10 @@ class Clients {
                 type: {
                     url_inventory: String,
                     url_runbook: String,
-                    url_tickets: String,
                     url_kickoff: String,
-                    url_grafana: String
+                    url_grafana: String,
+                    url_sla: String,
+                    url_agreement: String
                 }
             },
             feedback: {

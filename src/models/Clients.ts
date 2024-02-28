@@ -16,10 +16,11 @@ interface IClients extends Document {
   typeContract: "Fixo" | "Avulso";
   urls: {
     url_inventory: string;
-    url_tickets: string;
     url_runbook: string;
     url_kickoff: string;
     url_grafana: string;
+    url_sla: string;
+    url_agreement: string;
   };
   compliances: Types.ObjectId[];
 }
@@ -78,9 +79,10 @@ class Clients {
           type: {
             url_inventory: String,
             url_runbook: String,
-            url_tickets: String,
             url_kickoff: String,
-            url_grafana: String
+            url_grafana: String,
+            url_sla: String,
+            url_agreement: String
           }
         },
         feedback: {

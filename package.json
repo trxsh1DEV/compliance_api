@@ -5,7 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "start": "nodemon server.js",
-    "dev": "tsc --watch | nodemon server.ts"
+    "dev": "tsc --watch | cross-env NODE_EXTRA_CA_CERTS=\"C:\\Users\\trxshy\\Documents\\Projects\\Infonova\\Production\\compliance\\src\\config\\intermediate.pem\" nodemon server.ts"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +14,7 @@
     "axios": "^1.6.2",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-delay": "^0.2.0",
