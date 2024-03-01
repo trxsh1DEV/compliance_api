@@ -3,26 +3,26 @@ import bcrypt from "bcrypt";
 import { generateToken, loginService } from "../services/auth/loginService";
 
 class AuthController {
-  async login(req: Request, res: Response) {
-    try {
-      const { email, password } = req.body;
-      const client = (await loginService(email)) || "";
+  // async login(req: Request, res: Response) {
+  //   try {
+  //     const { email, password } = req.body;
+  //     const client = (await loginService(email)) || "";
 
-      const passwordIsValid = bcrypt.compareSync(password, client && client.password);
-      if (!passwordIsValid || client == "") return res.status(404).json({ errors: ["Wrong credentials"] });
+  //     const passwordIsValid = bcrypt.compareSync(password, client && client.password);
+  //     if (!passwordIsValid || client == "") return res.status(404).json({ errors: ["Wrong credentials"] });
 
-      if (!client || typeof client.isAdmin !== "boolean") {
-        return res.status(404).json({ errors: ["Wrong credentials"] });
-      }
-      const token = await generateToken(client.id, client.isAdmin);
+  //     if (!client || typeof client.isAdmin !== "boolean") {
+  //       return res.status(404).json({ errors: ["Wrong credentials"] });
+  //     }
+  //     const token = await generateToken(client.id, client.isAdmin);
 
-      return res.status(200).json({ token });
-    } catch (err: any) {
-      return res.status(500).json({
-        errors: [err.message]
-      });
-    }
-  }
+  //     return res.status(200).json({ token });
+  //   } catch (err: any) {
+  //     return res.status(500).json({
+  //       errors: [err.message]
+  //     });
+  //   }
+  // }
   async test(req: Request, res: Response) {
     try {
       // @ts-ignore

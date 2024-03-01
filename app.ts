@@ -9,13 +9,9 @@ import clientsRoutes from "./src/routes/clients";
 import authRoutes from "./src/routes/auth";
 import commomUsersRoutes from "./src/routes/commomUser";
 import avatarRoutes from "./src/routes/avatar";
+import testRoutes from "./src/routes/test";
 import featuresRoutes from "./src/routes/features";
 import keycloak, { memoryStore } from "./src/config/keycloak";
-
-// const chainFilePath = resolve(__dirname, "..", "config", "intermediate.pem");
-// process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
-
-// process.env["NODE_EXTRA_CA_CERTS"] = chainFilePath;
 
 class App {
   public app: Application;
@@ -28,7 +24,7 @@ class App {
 
   private middlewares(): void {
     const corsOptions = {
-      origin: ["http://localhost:5173", "http://179.213.2.192", "https://portalcliente.infonova.com.br"],
+      origin: ["http://localhost:5173", "https://portalcliente.infonova.com.br"],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       allowedHeaders: "Content-Type,Authorization",
       optionsSuccessStatus: 204
@@ -64,6 +60,7 @@ class App {
     this.app.use("/user/", commomUsersRoutes);
     this.app.use("/images/", avatarRoutes);
     this.app.use("/features/", featuresRoutes);
+    this.app.use("/test/", testRoutes);
   }
 }
 

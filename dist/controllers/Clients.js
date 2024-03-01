@@ -46,16 +46,12 @@ class ClientsController {
     }
     async store(req, res) {
         try {
-            const { name, email, password, isAdmin } = req.body;
-            if (!name || !email || !password || typeof isAdmin !== "boolean") {
+            const { name, email, isAdmin } = req.body;
+            if (!name || !email || typeof isAdmin !== "boolean") {
                 return res.status(400).json({
                     errors: ["Submit all fields for registration"]
                 });
             }
-            if (password.lenght < 8 && password.lenght > 30)
-                return res.status(400).json({
-                    errors: ["A senha deve ter entre 8 e 30 caracteres"]
-                });
             const newClient = await clientService_1.default.create(req.body);
             if (!newClient)
                 res.status(404).json({ errors: "Error creating client" });
@@ -68,7 +64,7 @@ class ClientsController {
         }
     }
     async update(req, res) {
-        const { name, social_reason, email, password, avatar, isAdmin, contact, cnpj, criticalProblems, typeContract, feedback } = req.body;
+        const { name, social_reason, email, avatar, isAdmin, contact, cnpj, criticalProblems, typeContract, feedback } = req.body;
         let { id } = req.params;
         if (!id) {
             id = req.locals.clientId;
@@ -77,7 +73,6 @@ class ClientsController {
             return res.status(400).json({ errors: "ID inválido" });
         if (!name &&
             !email &&
-            !password &&
             !avatar &&
             !social_reason &&
             !contact &&
@@ -97,7 +92,6 @@ class ClientsController {
                 name,
                 social_reason,
                 email,
-                password,
                 avatar,
                 isAdmin: !!isAdmin,
                 contact,
