@@ -23,7 +23,8 @@ class ComplianceController {
         try {
             const { complianceId } = req.params;
             // Se no body da requisição não especificar um cliente por padrão vou pegar o clientID q está no próprio token do user logado
-            const id = req.body.client || req.body.clientId;
+            // @ts-ignore
+            const id = req.body.client || req.locals.clientId;
             const client = await clientService_1.default.show(id);
             if (!client)
                 return res.status(404).json({ errors: ["Client Not Found"] });
@@ -53,7 +54,9 @@ class ComplianceController {
     }
     async latestCompliance(req, res) {
         try {
-            const id = req.body.client || req.body.clientId;
+            // @ts-ignore
+            // @ts-ignore
+            const id = req.body.client || req.locals.clientId;
             const getLatestCompliance = await complianceService_1.default.latest(id);
             if (getLatestCompliance)
                 return res.status(200).json(getLatestCompliance);

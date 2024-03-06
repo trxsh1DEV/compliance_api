@@ -1,60 +1,39 @@
-import { NextFunction, Request, Response } from "express";
-// import jwt, { JwtHeader, JwtPayload, VerifyCallback, VerifyErrors } from "jsonwebtoken";
-// import jwksClient from "jwks-rsa";
+// middlewareAuth.js
+import { Request, Response, NextFunction } from "express";
+import { decode } from "jsonwebtoken";
 import { sendErrorResponse } from "../services/utilities";
-import ClientService from "../services/clients/clientService";
+import ClienteService from "../services/clients/clientService";
 
-// function getKey(header: JwtHeader, callback: jwt.SigningKeyCallback): void {
-//   const jwksUri = "http://localhost:8080/realms/Demo-Realm/protocol/openid-connect/certs" || "";
-//   const client = jwksClient({ jwksUri, timeout: 30000 });
+export default function middlewareAuth(role: string) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers?.authorization?.split(" ")[1];
+      if (!token) {
+        return sendErrorResponse(res, ["Login required", "Tente fazer o login"], 401);
+      }
 
-//   client
-//     .getSigningKey(header.kid)
-//     .then((key) => callback(null, key.getPublicKey()))
-//     .catch(callback);
-// }
+      const tokenDataUser: any = decode(token || "");
+      const { email, realm_access } = tokenDataUser;
+      const client = (await ClienteService.getUserEmail(email)) || "";
+      if (!client) return sendErrorResponse(res, ["Not Found"], 404);
 
-// // Função para verificar e decodificar o token JWT
-// export function verify(token: string) {
-//   return new Promise((resolve, reject) => {
-//     const verifyCallback: VerifyCallback<JwtPayload | string> = (error: VerifyErrors | null, decoded: any) => {
-//       if (error) {
-//         return reject(error);
-//       }
-//       const { user_id, email } = decoded;
-//       return resolve({ user_id, email });
-//     };
+      // Verificar se o usuário tem a função necessária
+      if (!realm_access?.roles.includes(role)) {
+        return sendErrorResponse(res, ["Unauthorized", "Sem permissão para acessar o recurso"], 403);
+      }
 
-//     jwt.verify(token, getKey, verifyCallback);
-//   });
-// }
+      // @ts-ignore
+      req.locals = {
+        clientEmail: email,
+        clientId: client.id,
+        clientRole: realm_access.roles
+      };
 
-export default async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // @ts-ignore
-    // console.log("oi", req?.kauth);
-    // @ts-ignore
-    const tokenDataUser = req?.kauth?.grant?.access_token?.content || req.headers?.authorization?.split(" ")[1];
-
-    if (!tokenDataUser) {
-      return sendErrorResponse(res, "Login required", 401);
+      next(); // Chame next() quando tudo estiver pronto
+    } catch (err) {
+      return res.status(401).json({
+        errors: ["Token expired or invalid"]
+      });
     }
-    const { email, realm_access } = tokenDataUser;
-    const client = (await ClientService.getUserEmail(email)) || "";
-    if (!client) return sendErrorResponse(res, "Not Found", 404);
-
-    // @ts-ignore
-    req.locals = {
-      clientId: client.id,
-      clientEmail: email,
-      clientRole: realm_access.roles
-    };
-    // @ts-ignore
-    // console.log(req.locals);
-    return next();
-  } catch (err) {
-    return res.status(401).json({
-      errors: ["Token expired or invalid"]
-    });
-  }
-};
+  };
+}
