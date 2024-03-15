@@ -8,6 +8,7 @@ const complianceService_1 = __importDefault(require("../services/compliance/comp
 const clientService_1 = __importDefault(require("../services/clients/clientService"));
 const operations_1 = require("../services/calc/operations");
 const infraDefault_1 = require("../services/data/infraDefault");
+const clientService_2 = __importDefault(require("../services/clients/clientService"));
 class ComplianceController {
     // async index(req: Request, res: Response) {
     //   const devices = await Compliance.find();
@@ -22,9 +23,12 @@ class ComplianceController {
     async show(req, res) {
         try {
             const { complianceId } = req.params;
-            // Se no body da requisição não especificar um cliente por padrão vou pegar o clientID q está no próprio token do user logado
-            // @ts-ignore
-            const id = req.body.client || req.locals.clientId;
+            let clientId;
+            if (!req.body.client) {
+                // @ts-ignore
+                clientId = await clientService_2.default.getUserEmail(req.locals.clientEmail);
+            }
+            const id = req.body.client || clientId;
             const client = await clientService_1.default.show(id);
             if (!client)
                 return res.status(404).json({ errors: ["Client Not Found"] });
@@ -54,9 +58,12 @@ class ComplianceController {
     }
     async latestCompliance(req, res) {
         try {
-            // @ts-ignore
-            // @ts-ignore
-            const id = req.body.client || req.locals.clientId;
+            let clientId;
+            if (!req.body.client) {
+                // @ts-ignore
+                clientId = await clientService_2.default.getUserEmail(req.locals.clientEmail);
+            }
+            const id = req.body.client || clientId;
             const getLatestCompliance = await complianceService_1.default.latest(id);
             if (getLatestCompliance)
                 return res.status(200).json(getLatestCompliance);

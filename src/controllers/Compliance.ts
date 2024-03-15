@@ -4,6 +4,7 @@ import complianceService from "../services/compliance/complianceService";
 import clientService from "../services/clients/clientService";
 import { calculatePointing } from "../services/calc/operations";
 import { infraDefault } from "../services/data/infraDefault";
+import ClienteService from "../services/clients/clientService";
 
 class ComplianceController {
   // async index(req: Request, res: Response) {
@@ -21,9 +22,13 @@ class ComplianceController {
   async show(req: Request, res: Response) {
     try {
       const { complianceId } = req.params;
-      // Se no body da requisição não especificar um cliente por padrão vou pegar o clientID q está no próprio token do user logado
-      // @ts-ignore
-      const id = req.body.client || req.locals.clientId;
+
+      let clientId;
+      if (!req.body.client) {
+        // @ts-ignore
+        clientId = await ClienteService.getUserEmail(req.locals.clientEmail);
+      }
+      const id = req.body.client || clientId;
 
       const client = await clientService.show(id);
       if (!client) return res.status(404).json({ errors: ["Client Not Found"] });
@@ -56,9 +61,12 @@ class ComplianceController {
 
   async latestCompliance(req: Request, res: Response) {
     try {
-      // @ts-ignore
-      // @ts-ignore
-      const id = req.body.client || req.locals.clientId;
+      let clientId;
+      if (!req.body.client) {
+        // @ts-ignore
+        clientId = await ClienteService.getUserEmail(req.locals.clientEmail);
+      }
+      const id = req.body.client || clientId;
 
       const getLatestCompliance = await complianceService.latest(id);
       if (getLatestCompliance) return res.status(200).json(getLatestCompliance);

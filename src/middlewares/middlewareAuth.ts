@@ -14,8 +14,9 @@ export default function middlewareAuth(role: string) {
 
       const tokenDataUser: any = decode(token || "");
       const { email, realm_access } = tokenDataUser;
-      const client = (await ClienteService.getUserEmail(email)) || "";
-      if (!client) return sendErrorResponse(res, ["Not Found"], 404);
+      if (!email || !realm_access) return sendErrorResponse(res, ["Fail get data of Token"], 400);
+      // const client = (await ClienteService.getUserEmail(email)) || "";
+      // if (!client) return sendErrorResponse(res, ["Not Found"], 404);
 
       // Verificar se o usuário tem a função necessária
       if (!realm_access?.roles.includes(role)) {
@@ -25,11 +26,11 @@ export default function middlewareAuth(role: string) {
       // @ts-ignore
       req.locals = {
         clientEmail: email,
-        clientId: client.id,
+        // clientId: client.id,
         clientRole: realm_access.roles
       };
 
-      next(); // Chame next() quando tudo estiver pronto
+      next();
     } catch (err) {
       return res.status(401).json({
         errors: ["Token expired or invalid"]

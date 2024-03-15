@@ -4,8 +4,7 @@ class AuthController {
     async test(req, res) {
         try {
             // @ts-ignore
-            const { clientEmail, clientId } = req.locals;
-            console.log(clientEmail, clientId);
+            // const clientId = await ClienteService.getUserEmail(req.locals.clientEmail)
             return res.json({ stats: "ok" });
         }
         catch (err) {

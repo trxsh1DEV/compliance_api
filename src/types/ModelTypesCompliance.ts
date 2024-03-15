@@ -1,4 +1,4 @@
-import { Document, Types } from 'mongoose';
+import { Document, Types } from "mongoose";
 
 // export interface IScore {
 //   score: number;
@@ -38,13 +38,13 @@ export interface IFrequency {
 // Backup
 
 export interface ISystemOperation {
-  patching: 'Regular' | 'Irregular';
+  patching: "Regular" | "Irregular";
   score: number;
   weight: number;
 }
 
 interface IConfigServerDocument {
-  type: 'low' | 'medium' | 'high';
+  type: "low" | "medium" | "high";
   score: number;
   weight: number;
 }
@@ -75,13 +75,7 @@ export interface IServers {
 
 export interface IHA {
   enabled: boolean;
-  solutions: (
-    | 'redundancy'
-    | 'load balance'
-    | 'failover'
-    | 'cluster'
-    | 'none'
-  )[];
+  solutions: ("redundancy" | "load balance" | "failover" | "cluster" | "none")[];
   tested: boolean;
   rto: number;
   score: number;
@@ -91,17 +85,10 @@ export interface IHA {
 
 export interface IFirewall {
   enabled: boolean;
-  manufacturer: [
-    'Sophos',
-    'Fortigate',
-    'Mikrotik',
-    'Cisco',
-    'SonicWall',
-    'PFsense',
-  ];
-  rules: ['weak', 'medium', 'good'];
+  manufacturer: ["Sophos", "Fortigate", "Mikrotik", "Cisco", "SonicWall", "PFsense"];
+  rules: ["weak", "medium", "good"];
   segmentation: boolean;
-  vpn: ['weak', 'medium', 'good'];
+  vpn: ["weak", "medium", "good"];
   ips: boolean;
   backup: boolean;
   restorarion: boolean;
@@ -113,25 +100,19 @@ export interface IFirewall {
 
 export interface IInventory {
   enabled: boolean;
-  devices: (
-    | 'Computadores'
-    | 'Notebooks'
-    | 'Servidores'
-    | 'Impressoras'
-    | 'Equipamentos'
-  )[];
+  devices: ("Computadores" | "Notebooks" | "Servidores" | "Impressoras" | "Equipamentos")[];
   contacts: boolean;
-  agentInventory: ['None', 'Few', 'Medium', 'Many', 'All'];
+  agentInventory: ["None", "Few", "Medium", "Many", "All"];
   score: number;
   weight: number;
   points: number;
 }
 
 export interface ISecurity {
-  antivirus: ['None', 'Few', 'Medium', 'Many', 'All'];
+  antivirus: ["None", "Few", "Medium", "Many", "All"];
   policyPassword: boolean;
   accessAuditing: boolean;
-  gpo: ['Nenhuma', 'Basica', 'Avançada'];
+  gpo: ["Nenhuma", "Basica", "Avançada"];
   lgpd: boolean;
   score: number;
   weight: number;

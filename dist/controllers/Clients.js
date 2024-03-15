@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const clientService_1 = __importDefault(require("../services/clients/clientService"));
 const mongoose_1 = require("mongoose");
+const clientService_2 = __importDefault(require("../services/clients/clientService"));
 class ClientsController {
     async findAllClients(req, res) {
         try {
@@ -27,7 +28,7 @@ class ClientsController {
             let { id } = req.params;
             if (!id) {
                 // Aqui estou pegando o id q está no token e eu seto somente no middlewareAuth
-                id = req.locals.clientId;
+                id = await clientService_2.default.getUserEmail(req.locals.clientEmail);
             }
             if (!(0, mongoose_1.isValidObjectId)(id))
                 return res.status(400).json({ errors: "ID inválido" });
@@ -67,7 +68,7 @@ class ClientsController {
         const { name, social_reason, email, avatar, isAdmin, contact, cnpj, criticalProblems, typeContract, feedback } = req.body;
         let { id } = req.params;
         if (!id) {
-            id = req.locals.clientId;
+            id = await clientService_2.default.getUserEmail(req.locals.clientEmail);
         }
         if (!(0, mongoose_1.isValidObjectId)(id))
             return res.status(400).json({ errors: "ID inválido" });

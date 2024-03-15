@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import clientService from "../services/clients/clientService";
 import { isValidObjectId } from "mongoose";
 import { ClientType } from "../types/ControllersType";
+import ClienteService from "../services/clients/clientService";
 
 class ClientsController {
   async findAllClients(req: Request, res: Response) {
@@ -28,7 +29,7 @@ class ClientsController {
 
       if (!id) {
         // Aqui estou pegando o id q está no token e eu seto somente no middlewareAuth
-        id = req.locals.clientId;
+        id = await ClienteService.getUserEmail(req.locals.clientEmail);
       }
 
       if (!isValidObjectId(id)) return res.status(400).json({ errors: "ID inválido" });
@@ -84,7 +85,7 @@ class ClientsController {
     let { id } = req.params;
 
     if (!id) {
-      id = req.locals.clientId;
+      id = await ClienteService.getUserEmail(req.locals.clientEmail);
     }
 
     if (!isValidObjectId(id)) return res.status(400).json({ errors: "ID inválido" });
